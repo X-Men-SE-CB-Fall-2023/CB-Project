@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./App.css";
-
+import { useForm, SubmitHandler } from "react-hook-form";
+type formInputs = [userName:string,password:string]
 
 function App() {
   return (
@@ -11,17 +12,23 @@ function App() {
 }
 
 const Credential = () => {
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm<formInputs>();
+
   const [userName, setUserName] = useState('');
   const [password, setPassword] = useState('');
-  const onSubmitHandler = () => {
-    let formData = [userName, password]
-    console.log(formData) 
-  }
+  const onSubmit: SubmitHandler<formInputs> = (data) => console.log(data)
   return (
     <div>
-      <input type="text" value={userName} onChange={(e) => {setUserName(e.target.value)}} className="input input-primary" placeholder="Username"/>
-      <input type="password" value={password} onChange={(e) => {setPassword(e.target.value)}}className="input input-primary" placeholder="Password"/>
-      <button onClick={onSubmitHandler} className="btn btn-primary">Login</button>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <input {...register("userName", {required: true})} type="text"  className="input input-primary" placeholder="Username"/>
+        <input {...register("password", {required: true})}type="password"  className="input input-primary" placeholder="Password"/>
+        <input type="submit" className="btn btn-primary" value="login"/>
+      </form>
     </div>
   );
 }
