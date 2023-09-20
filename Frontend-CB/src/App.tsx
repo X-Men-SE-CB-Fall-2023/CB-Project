@@ -20,7 +20,7 @@ const Credential = () => {
   const onSubmit: SubmitHandler<formInputs> = (data) => console.log(data)
   return (
     <div className="min-h-screen flex justify-center items-center bg-emerald-700">
-      <div className="bg-slate-300 p-8 rounded shadow max-w-xs">
+      <div className="bg-slate-100 p-8 rounded shadow max-w-xs">
         <div>
           <img 
             className="logoLogin mx-auto rounded-full border-black border bg-white" 
@@ -36,7 +36,7 @@ const Credential = () => {
             <input 
               {...register("userName", {required: true})}
               type="text"  
-              className="input border-b-2 border-slate-600" 
+              className="bg-slate-200 border-b-2 border-slate-600 rounded-sm" 
               placeholder="Enter your username"
             />
           </div>
@@ -46,7 +46,7 @@ const Credential = () => {
             <input 
               {...register("password", {required: true})}
               type="password"
-              className="input border-b-2 border-slate-600" 
+              className="bg-slate-200 border-b-2 border-slate-600 rounded-sm" 
               placeholder="Enter your password"
             />
           </div>
