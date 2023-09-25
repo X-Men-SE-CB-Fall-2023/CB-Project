@@ -45,6 +45,7 @@ public class SecurityConfig {
     }
 
 
+
     @Bean()
     @Order(Ordered.HIGHEST_PRECEDENCE)
     SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
