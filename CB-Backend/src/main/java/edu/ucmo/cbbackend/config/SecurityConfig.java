@@ -1,6 +1,7 @@
 package edu.ucmo.cbbackend.config;
 
 import edu.ucmo.cbbackend.service.UserDetailsService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -19,6 +20,8 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @EnableWebSecurity
 @Configuration
 public class SecurityConfig {
+
+
 
 
 
@@ -53,7 +56,7 @@ public class SecurityConfig {
                         .requestMatchers("/login").permitAll()
                         .requestMatchers("/user/**").permitAll()
                         .requestMatchers("/user").permitAll() // permit all requests to login
-                        .anyRequest().authenticated()
+                        .anyRequest().authenticated() // all other requests require authentication
                 )
 
                 .build();

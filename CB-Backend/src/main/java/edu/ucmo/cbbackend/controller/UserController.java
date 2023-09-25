@@ -3,8 +3,12 @@ package edu.ucmo.cbbackend.controller;
 import edu.ucmo.cbbackend.model.User;
 import edu.ucmo.cbbackend.repository.UserRepository;
 import edu.ucmo.cbbackend.service.UserDetailsService;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
+
 
 @RestController
 public class UserController {
@@ -18,12 +22,15 @@ public class UserController {
     }
 
     @GetMapping("/user/me")
-    public String me(){
-        return "Hello JWT";
+    public String me(Principal principal, HttpSession session) {
+
+        return principal.getName();
+
     }
 
-    @GetMapping("/user/:id")
-    public User getUserById(Long id){
+    @GetMapping("/user/{id}")
+    public User getUserById(@PathVariable Long id){
+        System.out.println("id = " + id);
         return userRepository.findById(id).orElse(null);
     }
 
@@ -33,9 +40,6 @@ public class UserController {
             return ResponseEntity.badRequest().body("Username is already taken");
         }
         user.setPassword(userDetailsService.passwordEncoder(user.getPassword()));
-
-        System.out.println(user.getUsername());
-        System.out.println(user.getPassword());
 
         try {
             return ResponseEntity.ok(userRepository.save(user));
@@ -52,8 +56,8 @@ public class UserController {
     //     "password": "admin"
     // }
 
-    @DeleteMapping("/user/:id")
-    public ResponseEntity<?> deleteUserById(@RequestParam Long id){
+    @DeleteMapping("/user/{id}")
+    public ResponseEntity<?> deleteUserById(@PathVariable Long id){
         if (userRepository.findById(id).orElse(null) == null){
             return ResponseEntity.badRequest().body("User does not exist");
         }
@@ -62,8 +66,8 @@ public class UserController {
 
     }
 
-    @PutMapping( "/user/:id")
-    public User updateUserById(@RequestParam Long id, @RequestParam User user){
+    @PutMapping( "/user/{id}")
+    public User updateUserById(@PathVariable Long id, @RequestBody User user){
         User userToUpdate = userRepository.findById(id).orElse(null);
         userToUpdate.setUsername(user.getUsername());
         userToUpdate.setPassword(user.getPassword());
