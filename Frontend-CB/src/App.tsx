@@ -14,11 +14,16 @@ type formInputs = {
 
 
 
+
+
 function App() {
+
+
 
 
 	return (
 		<>
+
 
 			<Credential />
 		</>
@@ -26,6 +31,9 @@ function App() {
 }
 
 const schema = yup.object().shape({
+	userName: yup.string().required("Username is required"),
+	password: yup.string().required("Password is required"),
+})
 	userName: yup.string().required("Username is required"),
 	password: yup.string().required("Password is required"),
 })
@@ -102,10 +110,17 @@ const Credential = () => {
 
 						<input
 							required
+						<input
+							required
 							{...register("userName", { required: true })}
 							type="text"
 							id="username"
+							id="username"
 							className={`bg-slate-200 border-b-2 border-slate-600 rounded-sm ${
+								errors.userName ? "border-red-500" : ""
+							}`}
+							//"bg-slate-200 border-b-2 border-slate-600 rounded-sm"
+							placeholder="Enter your username"
 								errors.userName ? "border-red-500" : ""
 							}`}
 							//"bg-slate-200 border-b-2 border-slate-600 rounded-sm"
@@ -120,14 +135,24 @@ const Credential = () => {
 						</label>
 						<input
 							required
+						<input
+							required
 							{...register("password", { required: true })}
 							type="password"
 							className={`bg-slate-200 border-b-2 border-slate-600 rounded-sm ${
 								errors.password ? "border-red-500" : ""
 							}`}
 							//"bg-slate-200 border-b-2 border-slate-600 rounded-sm"
+								errors.password ? "border-red-500" : ""
+							}`}
+							//"bg-slate-200 border-b-2 border-slate-600 rounded-sm"
 							placeholder="Enter your password"
 						/>
+						{errors.password && (
+							<p className="text-red-500 text-sm mt-1">
+								{errors.password.message}
+							</p>
+						)}
 						{errors.password && (
 							<p className="text-red-500 text-sm mt-1">
 								{errors.password.message}
