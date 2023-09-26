@@ -21,20 +21,14 @@ public class UserController {
         this.userDetailsService = userDetailsService;
     }
 
-    @GetMapping("/user/me")
-    public String me(Principal principal, HttpSession session) {
 
-        return principal.getName();
-
-    }
-
-    @GetMapping("/user/{id}")
+    @GetMapping("/api/v1/user/{id}")
     public User getUserById(@PathVariable Long id){
         System.out.println("id = " + id);
         return userRepository.findById(id).orElse(null);
     }
 
-    @PostMapping("/user")
+    @PostMapping("/api/v1/user")
     public ResponseEntity<?> createUser( @RequestBody User  user){
         if (userRepository.findByUsername(user.getUsername()) != null){
             return ResponseEntity.badRequest().body("Username is already taken");
@@ -56,7 +50,7 @@ public class UserController {
     //     "password": "admin"
     // }
 
-    @DeleteMapping("/user/{id}")
+    @DeleteMapping("/api/v1/user/{id}")
     public ResponseEntity<?> deleteUserById(@PathVariable Long id){
         if (userRepository.findById(id).orElse(null) == null){
             return ResponseEntity.badRequest().body("User does not exist");
@@ -66,11 +60,11 @@ public class UserController {
 
     }
 
-    @PutMapping( "/user/{id}")
+    @PutMapping( "/api/v1/user/{id}")
     public User updateUserById(@PathVariable Long id, @RequestBody User user){
         User userToUpdate = userRepository.findById(id).orElse(null);
         userToUpdate.setUsername(user.getUsername());
-        userToUpdate.setPassword(user.getPassword());
+        userToUpdate.setPassword(userDetailsService.passwordEncoder(user.getPassword()));
         return userRepository.save(userToUpdate);
     }
 
