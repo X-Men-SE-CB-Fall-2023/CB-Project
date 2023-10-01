@@ -2,6 +2,7 @@ package edu.ucmo.cbbackend.service;
 
 
 
+import edu.ucmo.cbbackend.model.UserDetails;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.jwt.JwtClaimsSet;
@@ -24,9 +25,9 @@ public class TokenService {
         this.encoder = encoder;
     }
 
-    public String generateToken(Authentication authentication) {
+    public String generateToken(UserDetails userDetails) {
         Instant now = Instant.now();
-        String scope = authentication.getAuthorities().stream()
+        String scope = UserDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(" "));
         JwtClaimsSet claims = JwtClaimsSet.builder()
