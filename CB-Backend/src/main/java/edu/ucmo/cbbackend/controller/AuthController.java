@@ -39,6 +39,7 @@ public class AuthController {
     @Operation(summary = "Login endpoint")
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody User user) {
+        try{
         UserDetails dbUser = (UserDetails) userDetailsService.loadUserByUsername(user.getUsername());
         if (dbUser == null) {
             return ResponseEntity.badRequest().body("Incorrect Credentials");
@@ -50,6 +51,10 @@ public class AuthController {
             HttpHeaders httpHeaders = new HttpHeaders();
             httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + token);
             return ResponseEntity.ok(token);
+    }
+        catch (Exception e){
+            return ResponseEntity.internalServerError().body("Internal Server Error");
+        }
     }
 
 }
