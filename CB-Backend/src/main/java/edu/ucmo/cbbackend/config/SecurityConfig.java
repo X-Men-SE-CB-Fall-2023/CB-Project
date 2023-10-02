@@ -76,8 +76,6 @@ public class SecurityConfig {
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/login").permitAll()
                         .requestMatchers("/login/**").permitAll()
-                        .requestMatchers("/api/v1/login").permitAll()
-                        .requestMatchers("/api/v1/login/**").permitAll()
                         .requestMatchers("/api/v1/user/**").permitAll() // permit all requests to login
                         .requestMatchers("/api/v1/user").permitAll() // permit all requests to login
                         .anyRequest().authenticated()// all other requests require authentication

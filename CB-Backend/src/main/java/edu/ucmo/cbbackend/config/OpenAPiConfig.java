@@ -12,8 +12,9 @@ import io.swagger.v3.oas.models.OpenAPI;
 @Configuration
 @SecurityScheme(
         type = SecuritySchemeType.HTTP,
-        name = "basicAuth",
-        scheme = "basic")
+        name = "jwtAuth",
+        scheme = "bearer",
+        bearerFormat = "JWT")
 
 public class OpenAPiConfig {
 

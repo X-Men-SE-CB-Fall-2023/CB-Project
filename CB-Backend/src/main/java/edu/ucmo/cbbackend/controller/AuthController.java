@@ -6,7 +6,9 @@ import edu.ucmo.cbbackend.service.TokenService;
 import edu.ucmo.cbbackend.service.UserDetailsService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import org.springframework.http.HttpHeaders;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +17,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+
 
 @RestController
 @CrossOrigin
@@ -28,7 +31,12 @@ public class AuthController {
         this.tokenService = tokenService;
         this.userDetailsService = userDetailsService;
     }
-
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Return a JWT", content = @io.swagger.v3.oas.annotations.media.Content),
+            @ApiResponse(responseCode = "401", description = "Return a String of 'Incorrect Credentials'", content = @io.swagger.v3.oas.annotations.media.Content),
+            @ApiResponse(responseCode = "500", description = "Return a String of 'Internal Server Error'", content = @io.swagger.v3.oas.annotations.media.Content)
+    })
+    @Operation(summary = "Login endpoint")
     @PostMapping("/login")
     public ResponseEntity<String> login(@RequestBody User user) {
         UserDetails dbUser = (UserDetails) userDetailsService.loadUserByUsername(user.getUsername());
@@ -39,23 +47,9 @@ public class AuthController {
             return ResponseEntity.badRequest().body("Incorrect Credentials");
         }
             String token = tokenService.generateToken(dbUser);
+            HttpHeaders httpHeaders = new HttpHeaders();
+            httpHeaders.add(HttpHeaders.AUTHORIZATION, "Bearer " + token);
             return ResponseEntity.ok(token);
-
-
-
-
-
-
     }
-
-    @Operation(summary = "Get a token for a user instead of using basic auth")
-    @ApiResponse(responseCode = "200", description = "Return a String of the token for the user")
-    @SecurityRequirement(name = "basicAuth")
-    @PostMapping("/api/v1/token")
-    public String token(Authentication authentication) {
-        String token = tokenService.generateToken(authentication);
-        return token;
-    }
-
 
 }
