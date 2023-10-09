@@ -7,7 +7,7 @@ import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
 import edu.ucmo.cbbackend.model.RsaKeyProperties;
-import edu.ucmo.cbbackend.service.UserDetailsService;
+import edu.ucmo.cbbackend.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -48,8 +48,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public UserDetailsService userDetailsService() {
-        return new UserDetailsService();
+    public UserService userService() {
+        return new UserService();
     }
 
     @Bean
@@ -59,7 +59,7 @@ public class SecurityConfig {
 
     @Bean
     public DaoAuthenticationConfigurer daoAuthenticationConfigurer() {
-        DaoAuthenticationConfigurer dao = new DaoAuthenticationConfigurer(userDetailsService());
+        DaoAuthenticationConfigurer dao = new DaoAuthenticationConfigurer(userService());
         dao.passwordEncoder(passwordEncoder());
 
         return dao;

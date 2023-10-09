@@ -19,8 +19,9 @@ public class ChangeRequest implements Serializable {
 
 
     @ManyToOne
-    @JoinColumn(name = "author_id", nullable = false)
+    @JoinColumn(name = "author_id", nullable = false, foreignKey = @ForeignKey(name = "FK_users"))
     private User author;
+
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

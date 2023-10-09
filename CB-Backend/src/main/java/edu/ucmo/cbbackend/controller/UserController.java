@@ -2,18 +2,14 @@ package edu.ucmo.cbbackend.controller;
 
 import edu.ucmo.cbbackend.model.User;
 import edu.ucmo.cbbackend.repository.UserRepository;
-import edu.ucmo.cbbackend.service.UserDetailsService;
+import edu.ucmo.cbbackend.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import jakarta.servlet.http.HttpSession;
-import jdk.jfr.ContentType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.security.Principal;
 
 
 @RestController
@@ -21,10 +17,10 @@ import java.security.Principal;
 public class UserController {
 
  private final UserRepository userRepository;
- private final UserDetailsService userDetailsService;
-    public UserController(UserRepository userRepository, UserDetailsService userDetailsService) {
+ private final UserService userService;
+    public UserController(UserRepository userRepository, UserService userService) {
         this.userRepository = userRepository;
-        this.userDetailsService = userDetailsService;
+        this.userService = userService;
     }
     @Operation(summary = "Get a user by id")
     @ApiResponses(value = {
@@ -59,11 +55,9 @@ public class UserController {
         }
         if (user.getId() != null)
             return ResponseEntity.badRequest().body("User id must be null"); // TODO: could add model or class that does not define id
-        user.setPassword(userDetailsService.passwordEncoder(user.getPassword()));
-
 
         try {
-            userRepository.save(user);
+            userService.save(user);
             user.setPassword(null);
             return ResponseEntity.ok().body(user);
         }
@@ -107,7 +101,7 @@ public class UserController {
             return ResponseEntity.badRequest().body("User does not exist"); //Todo could verify that this works
         }
         userToUpdate.setUsername(user.getUsername());
-        userToUpdate.setPassword(userDetailsService.passwordEncoder(user.getPassword()));
+        userToUpdate.setPassword(userService.passwordEncoder(user.getPassword()));
         userRepository.save(userToUpdate);
         userToUpdate.setPassword(null);
         return ResponseEntity.ok().body(userToUpdate);
