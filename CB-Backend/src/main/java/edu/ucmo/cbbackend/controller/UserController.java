@@ -113,4 +113,22 @@ public class UserController {
         return ResponseEntity.ok().body(userToUpdate);
     }
 
+    @Operation(summary = "Get current user information")
+    @ApiResponse(value = {
+            @ApiResponse(responseCode = "200", description = "Return current user data", content = {@Content( mediaType = "application/json",
+                schema = @Schema(implementation = User.class))} ),
+            @ApiResponse(responseCode = "401", description = "Unauthorized", content = @Content ),
+    })
+    @GetMapping("/api/v1/user/me")
+    public ResponseEntity<?> getCurrentUser() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if ((auth != null) && (auth.getPrinciple() instanceof User)){
+            User user = (User) auth.getPrinciple();
+            user.setPassword(null);
+            return ResponseEntity.ok().body(user);
+        }
+        else{
+            return ResponseEntity.status(HttpStatus.Unauthorized).build();
+        }
+    }
 }
