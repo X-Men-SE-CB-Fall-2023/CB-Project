@@ -1,5 +1,7 @@
 package edu.ucmo.cbbackend.controller;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import edu.ucmo.cbbackend.Views.Views;
 import edu.ucmo.cbbackend.model.User;
 import edu.ucmo.cbbackend.repository.UserRepository;
 import edu.ucmo.cbbackend.service.UserService;
@@ -30,10 +32,9 @@ public class UserController {
 
     })
     @GetMapping("/api/v1/user/{id}")
-    public ResponseEntity<?> getUserById(@PathVariable Long id){
+    public ResponseEntity<?> getUserById(@PathVariable @JsonView(Views.Public.class)  Long id){
         try {
            User user =  userRepository.findById(id).orElseThrow(() ->  new Exception("User does not exist")); //TODO: consider add error handling
-            user.setPassword(null);
             return ResponseEntity.ok().body(user);
         }
         catch (Exception e){
@@ -49,7 +50,7 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Return a String of 'User id must be null'" , content = @Content ),
     })
     @PostMapping("/api/v1/user")
-    public ResponseEntity<?> createUser( @RequestBody User  user){
+    public ResponseEntity<?> createUser( @RequestBody  User  user){
         if (userRepository.findByUsername(user.getUsername()) != null){
             return ResponseEntity.badRequest().body("Username is already taken");
         }
@@ -58,7 +59,6 @@ public class UserController {
 
         try {
             userService.save(user);
-            user.setPassword(null);
             return ResponseEntity.ok().body(user);
         }
         catch (Exception e){
@@ -88,14 +88,14 @@ public class UserController {
 
     }
 
-    @Operation(summary = "Update a user by id")
+    @Operation(summary = "Update a user by id" )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Return a user object", content = {@Content( mediaType = "application/json",
                     schema = @Schema(implementation = User.class))} ),
             @ApiResponse(responseCode = "400", description = "Return a String of 'User does not exist'", content = @Content ),
     })
-    @PutMapping( "/api/v1/user/{id}")
-    public ResponseEntity<?> updateUserById(@PathVariable Long id, @RequestBody User user){
+    @PutMapping( "/api/v1/user/{id}" )
+    public ResponseEntity<?> updateUserById(@PathVariable Long id, @JsonView(Views.Private.class)  @RequestBody User user){
         User userToUpdate = userRepository.findById(id).orElse(null);
         if (userToUpdate == null){
             return ResponseEntity.badRequest().body("User does not exist"); //Todo could verify that this works

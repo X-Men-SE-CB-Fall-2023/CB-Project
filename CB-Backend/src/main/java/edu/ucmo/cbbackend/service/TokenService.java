@@ -2,6 +2,7 @@ package edu.ucmo.cbbackend.service;
 
 
 
+import org.slf4j.Logger;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,6 +22,7 @@ public class TokenService {
 
     private final JwtEncoder encoder;
 
+    private final Logger logger = org.slf4j.LoggerFactory.getLogger(TokenService.class);
     public TokenService(JwtEncoder encoder) {
         this.encoder = encoder;
     }
@@ -37,6 +39,8 @@ public class TokenService {
                 .subject(userDetails.getUsername())
                 .claim("scope", scope)
                 .build();
+
+        logger.info("claims: {}", scope);
         return this.encoder.encode(JwtEncoderParameters.from(claims)).getTokenValue();
     }
 
