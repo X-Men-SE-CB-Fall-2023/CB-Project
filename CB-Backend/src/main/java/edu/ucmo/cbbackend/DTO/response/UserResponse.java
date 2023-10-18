@@ -1,10 +1,11 @@
-package edu.ucmo.cbbackend.DTO.reponses;
+package edu.ucmo.cbbackend.DTO.response;
 
 import edu.ucmo.cbbackend.model.ChangeRequest;
 import edu.ucmo.cbbackend.model.Roles;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.context.annotation.Primary;
 
 import java.util.List;
 
@@ -13,9 +14,10 @@ import java.util.List;
 @NoArgsConstructor
 public class UserResponse {
     private Long id;
-    private  String username;
+    private String Username;
+    private String Password;
     private Roles role;
-    private List<ChangeRequest> changeRequest;
+    private List<ChangeRequest> changeRequests;
 
 
 }

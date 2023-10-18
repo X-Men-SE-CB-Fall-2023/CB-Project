@@ -1,7 +1,7 @@
 package edu.ucmo.cbbackend.controller;
 
+import edu.ucmo.cbbackend.DTO.response.UserResponse;
 import edu.ucmo.cbbackend.model.User;
-import edu.ucmo.cbbackend.DTO.reponses.UserResponse;
 import edu.ucmo.cbbackend.repository.UserRepository;
 import edu.ucmo.cbbackend.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,8 +9,12 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.method.annotation.PrincipalMethodArgumentResolver;
+
+import java.security.Principal;
 
 
 @RestController
@@ -38,7 +42,7 @@ public class UserController {
             userResponse.setId(user.getId());
             userResponse.setUsername(user.getUsername());
             userResponse.setRole(user.getRoles());
-            userResponse.setChangeRequest(user.getChangeRequests());
+            userResponse.setChangeRequests(user.getChangeRequests());
             return ResponseEntity.ok().body(userResponse);
         }
         catch (Exception e){
