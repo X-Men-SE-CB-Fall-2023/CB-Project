@@ -1,8 +1,7 @@
 package edu.ucmo.cbbackend.controller;
 
-import com.fasterxml.jackson.annotation.JsonView;
-import edu.ucmo.cbbackend.Views.Views;
 import edu.ucmo.cbbackend.model.User;
+import edu.ucmo.cbbackend.DTO.reponses.UserResponse;
 import edu.ucmo.cbbackend.repository.UserRepository;
 import edu.ucmo.cbbackend.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -32,10 +31,15 @@ public class UserController {
 
     })
     @GetMapping("/api/v1/user/{id}")
-    public ResponseEntity<?> getUserById(@PathVariable @JsonView(Views.Public.class)  Long id){
+    public ResponseEntity<?> getUserById(@PathVariable   Long id){
         try {
            User user =  userRepository.findById(id).orElseThrow(() ->  new Exception("User does not exist")); //TODO: consider add error handling
-            return ResponseEntity.ok().body(user);
+            UserResponse userResponse = new UserResponse();
+            userResponse.setId(user.getId());
+            userResponse.setUsername(user.getUsername());
+            userResponse.setRole(user.getRoles());
+            userResponse.setChangeRequest(user.getChangeRequests());
+            return ResponseEntity.ok().body(userResponse);
         }
         catch (Exception e){
             return ResponseEntity.badRequest().body(e.toString());
@@ -95,7 +99,7 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Return a String of 'User does not exist'", content = @Content ),
     })
     @PutMapping( "/api/v1/user/{id}" )
-    public ResponseEntity<?> updateUserById(@PathVariable Long id, @JsonView(Views.Private.class)  @RequestBody User user){
+    public ResponseEntity<?> updateUserById(@PathVariable Long id,  @RequestBody User user){
         User userToUpdate = userRepository.findById(id).orElse(null);
         if (userToUpdate == null){
             return ResponseEntity.badRequest().body("User does not exist"); //Todo could verify that this works

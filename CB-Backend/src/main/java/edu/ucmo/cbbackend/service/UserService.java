@@ -33,8 +33,6 @@ public class UserService implements UserDetailsService {
         }
 
 
-
-
         if(rolesRepository.findByName(user.getRoles().getName().toUpperCase()) == null){
             throw new RuntimeException("Role does not exist");
         }

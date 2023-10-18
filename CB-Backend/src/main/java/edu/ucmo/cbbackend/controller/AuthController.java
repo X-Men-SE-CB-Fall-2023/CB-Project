@@ -1,6 +1,6 @@
 package edu.ucmo.cbbackend.controller;
 
-import edu.ucmo.cbbackend.model.User;
+import edu.ucmo.cbbackend.DTO.request.LoginRequest;
 import edu.ucmo.cbbackend.service.TokenService;
 import edu.ucmo.cbbackend.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,13 +37,14 @@ public class AuthController {
     })
     @Operation(summary = "Login endpoint")
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody User user) {
+    public ResponseEntity<String> login(@RequestBody LoginRequest loginRequest) {
         try{
-        UserDetails dbUser = userService.loadUserByUsername(user.getUsername());
+
+        UserDetails dbUser = userService.loadUserByUsername(loginRequest.getUsername());
         if (dbUser == null) {
             return ResponseEntity.badRequest().body("Incorrect Credentials");
         }
-        if (!userService.passwordEncoder.matches(user.getPassword(), dbUser.getPassword())) {
+        if (!userService.passwordEncoder.matches(loginRequest.getPassword(), dbUser.getPassword())) {
             return ResponseEntity.badRequest().body("Incorrect Credentials");
         }
             String token = tokenService.generateToken(dbUser);

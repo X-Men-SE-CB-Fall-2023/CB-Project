@@ -1,13 +1,7 @@
 package edu.ucmo.cbbackend.model;
 
-import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonView;
-import edu.ucmo.cbbackend.Views.Views;
-import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.media.SchemaProperties;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -49,6 +43,8 @@ public class User implements Serializable, UserDetails {
 
     @Column(nullable = false)
     private boolean enabled;
+
+
 
     @ManyToOne
     @JoinColumn(name = "role_id", nullable = false, foreignKey = @ForeignKey(name = "FK_roles"))
