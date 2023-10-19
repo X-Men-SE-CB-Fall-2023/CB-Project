@@ -10,6 +10,7 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
+@Builder
 
 public class ChangeRequest implements Serializable {
 
@@ -19,7 +20,7 @@ public class ChangeRequest implements Serializable {
 
 
     @ManyToOne
-    @JoinColumn(name = "author_id", nullable = false, foreignKey = @ForeignKey(name = "FK_users"))
+    @JoinColumn(name = "author", nullable = false, foreignKey = @ForeignKey(name = "FK_users"))
     private User author;
 
 
@@ -27,14 +28,14 @@ public class ChangeRequest implements Serializable {
     @Column(nullable = false)
     private ChangeType changeType;
 
+    @Column(nullable = false)
+    private Integer applicationId;
 
-    @Column(nullable = false, length = 80)
+    @Column(nullable = false)
     private String description;
 
-    @Column(nullable = false, unique = true)
-    private Long changeRequestID;
-
-
+    @Column(nullable = false)
+    private String reason;
 
 
 }

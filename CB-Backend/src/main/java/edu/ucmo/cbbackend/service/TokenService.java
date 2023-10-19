@@ -2,6 +2,7 @@ package edu.ucmo.cbbackend.service;
 
 
 
+import edu.ucmo.cbbackend.model.User;
 import org.slf4j.Logger;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,16 +28,16 @@ public class TokenService {
         this.encoder = encoder;
     }
 
-    public String generateToken(UserDetails userDetails) {
+    public String generateToken(User user) {
         Instant now = Instant.now();
-        String scope = userDetails.getAuthorities().stream()
+        String scope = user.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(" "));
         JwtClaimsSet claims = JwtClaimsSet.builder()
                 .issuer("self")
                 .issuedAt(now)
                 .expiresAt(now.plus(1, ChronoUnit.HOURS))
-                .subject(userDetails.getUsername())
+                .subject(user.getUsername())
                 .claim("scope", scope)
                 .build();
 

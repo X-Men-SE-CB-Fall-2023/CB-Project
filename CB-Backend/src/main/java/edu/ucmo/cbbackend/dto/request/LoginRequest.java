@@ -1,4 +1,4 @@
-package edu.ucmo.cbbackend.DTO.request;
+package edu.ucmo.cbbackend.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

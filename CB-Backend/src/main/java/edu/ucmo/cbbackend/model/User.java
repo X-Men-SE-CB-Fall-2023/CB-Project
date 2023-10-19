@@ -9,6 +9,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -28,9 +29,8 @@ public class User implements Serializable, UserDetails {
     private String username;
 
 
-    @OneToMany
-    @JoinColumn(name = "change_request_id", foreignKey = @ForeignKey(name = "FK_change_requests"))
-    public List<ChangeRequest> changeRequests;
+@OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+    public List<ChangeRequest> changeRequests = new ArrayList<>();
 
     @Column(nullable = false)
     private boolean accountNonExpired;
@@ -57,23 +57,23 @@ public class User implements Serializable, UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return false;
+        return  accountNonExpired;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return false;
+        return accountNonLocked;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return false;
+        return credentialsNonExpired;
     }
 
 
     @Override
     public boolean isEnabled() {
-        return false;
+        return enabled;
     }
 
     @Override

@@ -1,6 +1,8 @@
 package edu.ucmo.cbbackend.controller;
 
-import edu.ucmo.cbbackend.DTO.response.UserResponse;
+import edu.ucmo.cbbackend.dto.request.UserEditRequest;
+import edu.ucmo.cbbackend.dto.request.UserRegisterRequest;
+import edu.ucmo.cbbackend.dto.response.UserResponse;
 import edu.ucmo.cbbackend.model.User;
 import edu.ucmo.cbbackend.repository.UserRepository;
 import edu.ucmo.cbbackend.service.UserService;
@@ -9,12 +11,9 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import org.springframework.boot.autoconfigure.security.servlet.UserDetailsServiceAutoConfiguration;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.mvc.method.annotation.PrincipalMethodArgumentResolver;
 
-import java.security.Principal;
 
 
 @RestController
@@ -30,20 +29,15 @@ public class UserController {
     @Operation(summary = "Get a user by id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Return a user object", content = {@Content( mediaType = "application/json",
-                    schema = @Schema(implementation = User.class))} ),
+                    schema = @Schema(implementation = UserResponse.class))} ),
             @ApiResponse(responseCode = "400", description = "Return a String of 'User does not exist'", content = @Content ),
 
     })
     @GetMapping("/api/v1/user/{id}")
-    public ResponseEntity<?> getUserById(@PathVariable   Long id){
+    public ResponseEntity<?> getUserById(@PathVariable  Long id){
         try {
            User user =  userRepository.findById(id).orElseThrow(() ->  new Exception("User does not exist")); //TODO: consider add error handling
-            UserResponse userResponse = new UserResponse();
-            userResponse.setId(user.getId());
-            userResponse.setUsername(user.getUsername());
-            userResponse.setRole(user.getRoles());
-            userResponse.setChangeRequests(user.getChangeRequests());
-            return ResponseEntity.ok().body(userResponse);
+            return ResponseEntity.ok().body(new UserResponse(user));
         }
         catch (Exception e){
             return ResponseEntity.badRequest().body(e.toString());
@@ -53,7 +47,7 @@ public class UserController {
     @Operation(summary = "Create a user and return the username and id but leave out the password")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Return a user object", content = {@Content( mediaType = "application/json",
-            schema = @Schema(implementation = User.class))} ),
+            schema = @Schema(implementation = UserRegisterRequest.class))} ),
             @ApiResponse(responseCode = "400", description = "Return a String of 'Username is already taken'", content = @Content ),
             @ApiResponse(responseCode = "400", description = "Return a String of 'User id must be null'" , content = @Content ),
     })
@@ -67,7 +61,7 @@ public class UserController {
 
         try {
             userService.save(user);
-            return ResponseEntity.ok().body(user);
+            return ResponseEntity.ok().body(new UserResponse(user));
         }
         catch (Exception e){
             return ResponseEntity.badRequest().body(e.toString());
@@ -103,16 +97,24 @@ public class UserController {
             @ApiResponse(responseCode = "400", description = "Return a String of 'User does not exist'", content = @Content ),
     })
     @PutMapping( "/api/v1/user/{id}" )
-    public ResponseEntity<?> updateUserById(@PathVariable Long id,  @RequestBody User user){
+    public ResponseEntity<?> updateUserById(@PathVariable Long id,  @RequestBody UserEditRequest user){
         User userToUpdate = userRepository.findById(id).orElse(null);
         if (userToUpdate == null){
             return ResponseEntity.badRequest().body("User does not exist"); //Todo could verify that this works
         }
-        userToUpdate.setUsername(user.getUsername());
-        userToUpdate.setPassword(userService.passwordEncoder(user.getPassword()));
-        userRepository.save(userToUpdate);
-        userToUpdate.setPassword(null);
-        return ResponseEntity.ok().body(userToUpdate);
+
+        if(user.getUsername() != null)
+            userToUpdate.setUsername(user.getUsername());
+
+        if (user.getPassword() != null)
+            userToUpdate.setPassword(userService.passwordEncoder(user.getPassword()));
+
+        if(user.getRoles() != null)
+            userToUpdate.setRoles(user.getRoles());
+
+        userService.save(userToUpdate);
+
+        return ResponseEntity.ok().body(new UserResponse(userToUpdate));
     }
 
 }
