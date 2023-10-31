@@ -3,9 +3,7 @@ package edu.ucmo.cbbackend.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -30,8 +28,8 @@ public class User implements Serializable, UserDetails {
     @Column(nullable = false, unique = true, length = 20)
     private String username;
 
-    @JsonIgnore
-    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
+
+@OneToMany(mappedBy = "author", cascade = CascadeType.ALL)
     public List<ChangeRequest> changeRequests = new ArrayList<>();
 
     @Column(nullable = false)
@@ -47,6 +45,7 @@ public class User implements Serializable, UserDetails {
     private boolean enabled;
 
 
+
     @ManyToOne
     @JoinColumn(name = "role_id", nullable = false, foreignKey = @ForeignKey(name = "FK_roles"))
     private Roles roles;
@@ -58,7 +57,7 @@ public class User implements Serializable, UserDetails {
 
     @Override
     public boolean isAccountNonExpired() {
-        return accountNonExpired;
+        return  accountNonExpired;
     }
 
     @Override
@@ -80,8 +79,9 @@ public class User implements Serializable, UserDetails {
     @Override
     @JsonIgnore
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority(roles.getName()));
+        return List.of(new SimpleGrantedAuthority( roles.getName()));
     }
+
 
 
 }
