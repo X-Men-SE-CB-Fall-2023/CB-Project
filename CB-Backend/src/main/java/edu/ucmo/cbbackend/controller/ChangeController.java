@@ -80,7 +80,7 @@ public class ChangeController {
             ChangeRequest convertedChangeRequest = change.toChangeRequest(user);
             changeService.save(convertedChangeRequest);
             ChangeRequestHttpResponse changeRequestHttpResponse = new ChangeRequestHttpResponse(convertedChangeRequest);
-            return ResponseEntity.ok().body(change);
+            return ResponseEntity.ok().body(changeRequestHttpResponse);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.toString());
         }

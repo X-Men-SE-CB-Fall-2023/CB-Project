@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
+import java.time.Instant;
 
 @Table(name = "change_requests")
 @Data
@@ -40,5 +41,7 @@ public class ChangeRequest implements Serializable {
     @Column(nullable = false)
     private String reason;
 
+    @Column(nullable = false)
+    private Instant created;
 
 }
