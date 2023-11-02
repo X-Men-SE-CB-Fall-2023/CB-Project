@@ -10,6 +10,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 
 @RestController("/api/v1/change")
 public class ChangeController {
@@ -69,6 +71,13 @@ public class ChangeController {
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.toString());
         }
+    }
+
+    @SecurityRequirement(name = "jwtAuth")
+    @GetMapping("/api/v1/change/")
+    public ResponseEntity<?> getChange() {
+        List<ChangeRequest> list = changeService.findAllSortByDate();
+        return ResponseEntity.ok().body(list);
     }
 
     @SecurityRequirement(name = "jwtAuth")
