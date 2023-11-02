@@ -29,7 +29,7 @@ public class ChangeRequestBody {
                 .description(description)
                 .reason(reason)
                 .applicationId(applicationId)
-                .created(new Date().toInstant())
+                .dateCreated(new Date())
                 .build();
     }
 }

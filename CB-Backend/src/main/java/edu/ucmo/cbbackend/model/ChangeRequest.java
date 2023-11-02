@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.time.Instant;
+import java.util.Date;
 
 @Table(name = "change_requests")
 @Data
@@ -42,6 +42,8 @@ public class ChangeRequest implements Serializable {
     private String reason;
 
     @Column(nullable = false)
-    private Instant created;
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date dateCreated;
+
 
 }
