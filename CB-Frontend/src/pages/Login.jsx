@@ -29,9 +29,8 @@ export default function () {
 			})
 
 			if (token && token.status === 200) {
-				localStorage.setItem("token", token)
+				localStorage.setItem("token", token.data)
 				navigate("/dashboard")
-				console.log(token)
 			} else if (token.status === 401) {
 				toast.error("Invalid username or password")
 			} else {
