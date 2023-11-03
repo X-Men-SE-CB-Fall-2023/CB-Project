@@ -80,6 +80,7 @@ export default function () {
 						<input
 							required
 							{...register("password", { required: true })}
+							placeholder="Enter your password"
 							type="password"
 							className={`bg-slate-200 border-b-2 border-slate-600 rounded-sm `}
 							//"bg-slate-200 border-b-2 border-slate-600 rounded-sm"
