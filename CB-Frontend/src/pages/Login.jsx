@@ -28,7 +28,7 @@ export default function () {
 				password: password,
 			})
 
-			if (!token && token.status === 200) {
+			if (token && token.status === 200) {
 				localStorage.setItem("token", token)
 				navigate("/dashboard")
 				console.log(token)
