@@ -19,6 +19,12 @@ public class ChangeRequestHttpResponse {
     private String description;
     private String reason;
     private Date DateCreated;
+    private Date DateUpdated;
+    private Date TimeWindowStart;
+    private Date TimeWindowEnd;
+    private  ChangeRequest changeRequestState;
+
+
 
     public ChangeRequestHttpResponse(ChangeRequest changeRequest) {
         this.id = changeRequest.getId();
@@ -28,7 +34,14 @@ public class ChangeRequestHttpResponse {
         this.description = changeRequest.getDescription();
         this.reason = changeRequest.getReason();
         this.DateCreated = changeRequest.getDateCreated();
-        this.DateCreated = changeRequest.getDateUpdated();
+        this.DateUpdated = changeRequest.getDateUpdated();
+        this.TimeWindowStart = changeRequest.getTimeWindowStart();
+        this.TimeWindowEnd = changeRequest.getTimeWindowEnd();
+        this.changeRequestState = changeRequest.getChangeRequestState();
+
+
+
+
     }
 
 

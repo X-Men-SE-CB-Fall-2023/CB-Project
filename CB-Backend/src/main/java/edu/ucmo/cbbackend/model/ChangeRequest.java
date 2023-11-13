@@ -1,6 +1,8 @@
 package edu.ucmo.cbbackend.model;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -49,6 +51,41 @@ public class ChangeRequest implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date dateUpdated;
 
+    /**
+     * The time window start.
+     * !!! DO NOT USE THIS FIELD directly  !!!
+     * @see ChangeRequest#getTimeWindowStart()
+     */
+    @Column(nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date timeWindowStart;
+
+
+    /**
+     * The time window end.
+     * !!! DO NOT USE THIS FIELD directly  !!!
+     *
+     */
+    @Column(nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date timeWindowEnd;
+
+
+
+    @Column(nullable = false)
+    private Long timeToRevert;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ChangeRequestApproveOrDeny approveOrDeny;
+
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ChangeRequestState state;
+
+    @Column(nullable = false)
+    @Min(3)
+    private String Implementer = "Not Assigned";
 
 
 }

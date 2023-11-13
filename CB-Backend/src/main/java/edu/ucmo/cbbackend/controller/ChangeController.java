@@ -47,6 +47,7 @@ public class ChangeController {
                 changeRequest.setDescription(changeRequestBody.getDescription());
             if (changeRequestBody.getReason() != null)
                 changeRequest.setReason(changeRequestBody.getReason());
+
             changeRequest.setDateUpdated(new Date());
 
             changeService.save(changeRequest);
