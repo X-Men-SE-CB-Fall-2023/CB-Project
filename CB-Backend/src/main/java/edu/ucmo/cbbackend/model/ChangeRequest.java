@@ -40,5 +40,9 @@ public class ChangeRequest implements Serializable {
     @Column(nullable = false)
     private String reason;
 
+    public String getUsername() {
+        return null;
+    }
+
 
 }
