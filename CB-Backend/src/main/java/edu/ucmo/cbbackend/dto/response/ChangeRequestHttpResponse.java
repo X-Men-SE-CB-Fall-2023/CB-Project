@@ -16,7 +16,7 @@ public class ChangeRequestHttpResponse {
     private Long applicationId;
     private String description;
     private String reason;
-    private String Username;
+    private Optional Username;
 
     public ChangeRequestHttpResponse(ChangeRequest changeRequest) {
         this.id = changeRequest.getId();
