@@ -2,10 +2,7 @@ package edu.ucmo.cbbackend;
 
 import com.github.javafaker.Faker;
 import com.github.javafaker.Superhero;
-import edu.ucmo.cbbackend.model.ChangeRequest;
-import edu.ucmo.cbbackend.model.ChangeType;
-import edu.ucmo.cbbackend.model.Roles;
-import edu.ucmo.cbbackend.model.User;
+import edu.ucmo.cbbackend.model.*;
 import edu.ucmo.cbbackend.repository.RolesRepository;
 import edu.ucmo.cbbackend.repository.UserRepository;
 import edu.ucmo.cbbackend.service.ChangeService;
@@ -67,6 +64,8 @@ public class Runner implements CommandLineRunner {
 
             for (int i = 0; i < 20; i++) {
                 ChangeType changeType;
+                ChangeRequestState changeRequestState;
+                ChangeRequestApproveOrDeny approveOrDeny;
                 // genreater random number from 0 to 2
                 int random = (int) (Math.random() * 3);
                 if (random == 0) {
@@ -78,6 +77,29 @@ public class Runner implements CommandLineRunner {
                     changeType = ChangeType.UNPLANNED;
                 }
 
+                 random = (int) (Math.random() * 4);
+                if (random == 0) {
+                    changeRequestState = ChangeRequestState.Application;
+                }
+                if(random == 1 ){
+                    changeRequestState = ChangeRequestState.Department;
+                }
+                if(random == 2 ){
+                    changeRequestState = ChangeRequestState.Frozen;
+                }
+                else {
+                    changeRequestState = ChangeRequestState.Completed;
+                }
+
+                random = (int) (Math.random() * 1);
+
+                if(random == 0 ){
+                    approveOrDeny = ChangeRequestApproveOrDeny.APPROVE;
+                }
+                else {
+                    approveOrDeny = ChangeRequestApproveOrDeny.DENY;
+                }
+
                 ChangeRequest changeRequest = ChangeRequest.builder()
                         .applicationId(Long.valueOf(faker.number().digits(10)))
                         .changeType(changeType)
@@ -86,6 +108,12 @@ public class Runner implements CommandLineRunner {
                         .dateUpdated(faker.date().birthday())
                         .author(user)
                         .reason(faker.lorem().sentence(20))
+                        .Implementer(faker.name().fullName())
+                        .timeToRevert(Long.valueOf(faker.number().digits(10)))
+                        .timeWindowStart(faker.date().future(365, java.util.concurrent.TimeUnit.DAYS))
+                        .timeWindowEnd(faker.date().future(365, java.util.concurrent.TimeUnit.DAYS))
+                        .approveOrDeny(approveOrDeny)
+                        .state(changeRequestState)
                         .build();
                 changeService.save(changeRequest);
             }
@@ -100,28 +128,60 @@ public class Runner implements CommandLineRunner {
 
 
             for (int i = 0; i < 20; i++) {
-                ChangeType changeType;
-                // genreater random number from 0 to 2
-                int random = (int) (Math.random() * 3);
-                if (random == 0) {
-                    changeType = ChangeType.PLANNED;
+                    ChangeType changeType;
+                    ChangeRequestState changeRequestState;
+                    ChangeRequestApproveOrDeny approveOrDeny;
+                    // genreater random number from 0 to 2
+                    int random = (int) (Math.random() * 3);
+                    if (random == 0) {
+                        changeType = ChangeType.PLANNED;
+                    }
+                    if (random == 1) {
+                        changeType = ChangeType.EMERGENCY;
+                    } else {
+                        changeType = ChangeType.UNPLANNED;
+                    }
+
+                    random = (int) (Math.random() * 4);
+                    if (random == 0) {
+                        changeRequestState = ChangeRequestState.Application;
+                    }
+                    if(random == 1 ){
+                        changeRequestState = ChangeRequestState.Department;
+                    }
+                    if(random == 2 ){
+                        changeRequestState = ChangeRequestState.Frozen;
+                    }
+                    else {
+                        changeRequestState = ChangeRequestState.Completed;
+                    }
+
+                    random = (int) (Math.random() * 1);
+
+                    if(random == 0 ){
+                        approveOrDeny = ChangeRequestApproveOrDeny.APPROVE;
+                    }
+                    else {
+                        approveOrDeny = ChangeRequestApproveOrDeny.DENY;
+                    }
+
+                    ChangeRequest changeRequest = ChangeRequest.builder()
+                            .applicationId(Long.valueOf(faker.number().digits(10)))
+                            .changeType(changeType)
+                            .dateCreated(faker.date().birthday())
+                            .description(faker.lorem().sentence(20))
+                            .dateUpdated(faker.date().birthday())
+                            .author(user)
+                            .reason(faker.lorem().sentence(20))
+                            .Implementer(faker.name().fullName())
+                            .timeToRevert(Long.valueOf(faker.number().digits(10)))
+                            .timeWindowStart(faker.date().future(365, java.util.concurrent.TimeUnit.DAYS))
+                            .timeWindowEnd(faker.date().future(365, java.util.concurrent.TimeUnit.DAYS))
+                            .approveOrDeny(approveOrDeny)
+                            .state(changeRequestState)
+                            .build();
+                    changeService.save(changeRequest);
                 }
-                if (random == 1) {
-                    changeType = ChangeType.EMERGENCY;
-                } else {
-                    changeType = ChangeType.UNPLANNED;
-                }
-                ChangeRequest changeRequest = ChangeRequest.builder()
-                        .applicationId(Long.valueOf(faker.number().digits(10)))
-                        .changeType(changeType)
-                        .dateCreated(faker.date().birthday())
-                        .description(faker.lorem().sentence(20))
-                        .reason(faker.lorem().sentence(20))
-                        .author(user)
-                        .dateUpdated(faker.date().birthday())
-                        .build();
-                changeService.save(changeRequest);
-            }
             logger.info("Department was created " + department.getUsername() + " with password " + "password" + " and role " + department.getRoles().getName());
         }
 

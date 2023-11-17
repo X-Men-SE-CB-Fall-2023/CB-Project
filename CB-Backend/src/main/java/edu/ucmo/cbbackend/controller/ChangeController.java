@@ -1,9 +1,8 @@
 package edu.ucmo.cbbackend.controller;
 
-import edu.ucmo.cbbackend.dto.request.ChangeRequestBody;
-import edu.ucmo.cbbackend.dto.response.ChangeRequestHttpResponse;
+import edu.ucmo.cbbackend.dto.request.ChangeRequestBodyDTO;
+import edu.ucmo.cbbackend.dto.response.ChangeRequestHttpResponseDTO;
 import edu.ucmo.cbbackend.model.ChangeRequest;
-import edu.ucmo.cbbackend.model.User;
 import edu.ucmo.cbbackend.repository.RolesRepository;
 import edu.ucmo.cbbackend.service.ChangeService;
 import edu.ucmo.cbbackend.service.UserService;
@@ -34,7 +33,7 @@ public class ChangeController {
 
     @SecurityRequirement(name = "jwtAuth")
     @PutMapping("/api/v1/change/{id}")
-    public ResponseEntity<?> updateChangeById(@PathVariable Long id, @RequestBody ChangeRequestBody changeRequestBody) {
+    public ResponseEntity<?> updateChangeById(@PathVariable Long id, @RequestBody ChangeRequestBodyDTO changeRequestBody) {
         try {
             ChangeRequest changeRequest = changeService.findById(id);
             if (changeRequest == null)
@@ -47,11 +46,30 @@ public class ChangeController {
                 changeRequest.setDescription(changeRequestBody.getDescription());
             if (changeRequestBody.getReason() != null)
                 changeRequest.setReason(changeRequestBody.getReason());
+            if (changeRequestBody.getTimeWindowStart() != null)
+                changeRequest.setTimeWindowStart(changeRequestBody.getTimeWindowStart());
+            if (changeRequestBody.getTimeWindowEnd() != null)
+                changeRequest.setTimeWindowEnd(changeRequestBody.getTimeWindowEnd());
+            if (changeRequestBody.getState() != null)
+                changeRequest.setState(changeRequestBody.getState());
+            if (changeRequestBody.getImplementer() != null)
+                changeRequest.setImplementer(changeRequestBody.getImplementer());
+            if (changeRequestBody.getApproveOrDeny() != null)
+                changeRequest.setApproveOrDeny(changeRequestBody.getApproveOrDeny());
+            if (changeRequestBody.getTimeToRevert() != null)
+                changeRequest.setTimeToRevert(changeRequestBody.getTimeToRevert());
+            if (changeRequestBody.getDateCreated() != null)
+                changeRequest.setDateCreated(changeRequestBody.getDateCreated());
+            if (changeRequestBody.getDateUpdated() != null)
+                changeRequest.setDateUpdated(changeRequestBody.getDateUpdated());
+            if (changeRequestBody.getAuthorId() != null)
+                changeRequest.setAuthor(userService.loadUserById(changeRequestBody.getAuthorId()));
+
 
             changeRequest.setDateUpdated(new Date());
 
             changeService.save(changeRequest);
-            ChangeRequestHttpResponse changeRequestHttpResponse = new ChangeRequestHttpResponse(changeRequest);
+            ChangeRequestHttpResponseDTO changeRequestHttpResponse = changeService.toDto(changeRequest);
             return ResponseEntity.ok().body(changeRequestHttpResponse);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.toString());
@@ -80,7 +98,7 @@ public class ChangeController {
             ChangeRequest changeRequest = changeService.findById(id);
             if (changeRequest == null)
                 return ResponseEntity.badRequest().body("Change Request does not exist");
-            ChangeRequestHttpResponse changeRequestHttpResponse = new ChangeRequestHttpResponse(changeRequest);
+            ChangeRequestHttpResponseDTO changeRequestHttpResponse = changeService.toDto(changeRequest);
             return ResponseEntity.ok().body(changeRequestHttpResponse);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.toString());
@@ -91,28 +109,26 @@ public class ChangeController {
     @GetMapping("/api/v1/change")
     public ResponseEntity<?> getChange(HttpServletRequest request, @RequestParam(required = false, defaultValue = "0") Integer page, @RequestParam(required = false, defaultValue = "5") Integer size) {
         if (userService.userRepository.findByUsername(request.getUserPrincipal().getName()).getRoles().equals(rolesRepository.findByName("USER"))) {
-            Page<ChangeRequestHttpResponse> list = changeService.findAllByUserIdAndSortByDate(page, size, request.getUserPrincipal().getName());
+            Page<ChangeRequestHttpResponseDTO> list = changeService.findAllByUserIdAndSortByDate(page, size, request.getUserPrincipal().getName());
             return ResponseEntity.ok().body(list);
         }
-        Page<ChangeRequestHttpResponse> list = changeService.findAllSortByDate(page, size);
+        Page<ChangeRequestHttpResponseDTO> list = changeService.findAllSortByDate(page, size);
         return ResponseEntity.ok().body(list);
     }
 
 
     @SecurityRequirement(name = "jwtAuth")
     @PostMapping("/api/v1/change")
-    public ResponseEntity<?> change(@RequestBody ChangeRequestBody change) {
-
+    public ResponseEntity<?> change(@RequestBody ChangeRequestBodyDTO change) {
         try {
-            User user = userService.loadUserById(change.getUserId());
-            ChangeRequest convertedChangeRequest = change.toChangeRequest(user);
+            ChangeRequest convertedChangeRequest = change.toChangeRequest(userService.userRepository);
             changeService.save(convertedChangeRequest);
-            ChangeRequestHttpResponse changeRequestHttpResponse = new ChangeRequestHttpResponse(convertedChangeRequest);
+            ChangeRequestHttpResponseDTO changeRequestHttpResponse = changeService.toDto(convertedChangeRequest);
             return ResponseEntity.created(URI.create("/api/v1/change/" + changeRequestHttpResponse.getId())).body(changeRequestHttpResponse);
+
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.toString());
         }
-
 
     }
 }

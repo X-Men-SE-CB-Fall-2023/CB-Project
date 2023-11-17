@@ -1,6 +1,6 @@
 package edu.ucmo.cbbackend.service;
 
-import edu.ucmo.cbbackend.dto.response.ChangeRequestHttpResponse;
+import edu.ucmo.cbbackend.dto.response.ChangeRequestHttpResponseDTO;
 import edu.ucmo.cbbackend.model.ChangeRequest;
 import edu.ucmo.cbbackend.model.User;
 import edu.ucmo.cbbackend.repository.ChangeRepository;
@@ -34,16 +34,35 @@ public class ChangeService {
         changeRepository.save(changeRequest);
     }
 
-    public Page<ChangeRequestHttpResponse> findAllSortByDate(int page, int size) {
-        Page<ChangeRequestHttpResponse> changeRequestHttpResponses = changeRepository.findAll(PageRequest.of(page, size, Sort.by("dateUpdated").descending())).map(ChangeRequestHttpResponse::new);
-        return changeRequestHttpResponses;
-    }
+ public Page<ChangeRequestHttpResponseDTO> findAllSortByDate(int page, int size) {
+    Page<ChangeRequest> changeRequests = changeRepository.findAll(PageRequest.of(page, size, Sort.by("dateUpdated").descending()));
+    return changeRequests.map(this::toDto);
+}
 
-    public Page<ChangeRequestHttpResponse> findAllByUserIdAndSortByDate(int page, int size, String username) {
+    public Page<ChangeRequestHttpResponseDTO> findAllByUserIdAndSortByDate(int page, int size, String username) {
         User user = userRepository.findByUsername(username);
 
         Page<ChangeRequest> changeRequestHttpResponses = changeRepository.findAllByAuthor(user, PageRequest.of(page, size, Sort.by("dateUpdated").descending()));
-        return changeRequestHttpResponses.map(ChangeRequestHttpResponse::new);
+         return changeRequestHttpResponses.map(this::toDto);
+    }
+
+    public ChangeRequestHttpResponseDTO toDto (ChangeRequest changeRequest){
+            return new ChangeRequestHttpResponseDTO(
+                    changeRequest.getId(),
+                    changeRequest.getAuthor().getId(),
+                    changeRequest.getChangeType(),
+                    changeRequest.getApplicationId(),
+                    changeRequest.getDescription(),
+                    changeRequest.getReason(),
+                    changeRequest.getDateCreated(),
+                    changeRequest.getDateUpdated(),
+                    changeRequest.getTimeWindowStart(),
+                    changeRequest.getTimeWindowEnd(),
+                    changeRequest.getTimeToRevert(),
+                    changeRequest.getApproveOrDeny(),
+                    changeRequest.getState(),
+                    changeRequest.getImplementer()
+            );
     }
 
 
