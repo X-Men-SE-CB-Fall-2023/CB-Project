@@ -1,8 +1,10 @@
 package edu.ucmo.cbbackend.dto.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import edu.ucmo.cbbackend.model.ChangeRequestApproveOrDeny;
 import edu.ucmo.cbbackend.model.ChangeRequestState;
 import edu.ucmo.cbbackend.model.ChangeType;
+import edu.ucmo.cbbackend.model.Roles;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.PositiveOrZero;
 import lombok.AllArgsConstructor;
@@ -12,6 +14,7 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Optional;
 
 /**
  * DTO for {@link edu.ucmo.cbbackend.model.ChangeRequest}
@@ -39,4 +42,7 @@ public class ChangeRequestHttpResponseDTO implements Serializable {
     private ChangeRequestApproveOrDeny approveOrDeny;
     private ChangeRequestState state;
     private String Implementer = "Not Assigned";
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Optional<String> authorUserName;
+    private Roles roles;
 }

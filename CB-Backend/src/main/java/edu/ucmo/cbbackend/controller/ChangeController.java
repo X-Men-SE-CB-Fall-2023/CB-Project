@@ -46,10 +46,18 @@ public class ChangeController {
                 changeRequest.setDescription(changeRequestBody.getDescription());
             if (changeRequestBody.getReason() != null)
                 changeRequest.setReason(changeRequestBody.getReason());
-            if (changeRequestBody.getTimeWindowStart() != null)
+            if (changeRequestBody.getTimeWindowStart() != null) {
                 changeRequest.setTimeWindowStart(changeRequestBody.getTimeWindowStart());
-            if (changeRequestBody.getTimeWindowEnd() != null)
+                if (!changeService.changeRequestDateValidation(changeRequestBody)) {
+                    return ResponseEntity.badRequest().body("Date needs to be validate date time range");
+                }
+            }
+            if (changeRequestBody.getTimeWindowEnd() != null) {
                 changeRequest.setTimeWindowEnd(changeRequestBody.getTimeWindowEnd());
+                if (!changeService.changeRequestDateValidation(changeRequestBody)) {
+                    return ResponseEntity.badRequest().body("Date needs to be validate date time range");
+                }
+            }
             if (changeRequestBody.getState() != null)
                 changeRequest.setState(changeRequestBody.getState());
             if (changeRequestBody.getImplementer() != null)
@@ -64,12 +72,17 @@ public class ChangeController {
                 changeRequest.setDateUpdated(changeRequestBody.getDateUpdated());
             if (changeRequestBody.getAuthorId() != null)
                 changeRequest.setAuthor(userService.loadUserById(changeRequestBody.getAuthorId()));
-
+            if (changeRequestBody.getRoles() != null)
+                changeRequest.setRoles(changeRequestBody.getRoles());
+            if (changeRequestBody.getApproveOrDeny() != null)
+                changeRequest.setApproveOrDeny(changeRequestBody.getApproveOrDeny());
+            if (changeRequestBody.getState() != null)
+                changeRequest.setState(changeRequestBody.getState());
 
             changeRequest.setDateUpdated(new Date());
 
             changeService.save(changeRequest);
-            ChangeRequestHttpResponseDTO changeRequestHttpResponse = changeService.toDto(changeRequest);
+            ChangeRequestHttpResponseDTO changeRequestHttpResponse = changeService.toDto(changeRequest, false);
             return ResponseEntity.ok().body(changeRequestHttpResponse);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.toString());
@@ -98,7 +111,7 @@ public class ChangeController {
             ChangeRequest changeRequest = changeService.findById(id);
             if (changeRequest == null)
                 return ResponseEntity.badRequest().body("Change Request does not exist");
-            ChangeRequestHttpResponseDTO changeRequestHttpResponse = changeService.toDto(changeRequest);
+            ChangeRequestHttpResponseDTO changeRequestHttpResponse = changeService.toDto(changeRequest, false);
             return ResponseEntity.ok().body(changeRequestHttpResponse);
         } catch (Exception e) {
             return ResponseEntity.internalServerError().body(e.toString());
@@ -107,12 +120,12 @@ public class ChangeController {
 
     @SecurityRequirement(name = "jwtAuth")
     @GetMapping("/api/v1/change")
-    public ResponseEntity<?> getChange(HttpServletRequest request, @RequestParam(required = false, defaultValue = "0") Integer page, @RequestParam(required = false, defaultValue = "5") Integer size) {
+    public ResponseEntity<?> getChange(HttpServletRequest request, @RequestParam(required = false, defaultValue = "0") Integer page, @RequestParam(required = false, defaultValue = "5") Integer size, @RequestParam(required = false, defaultValue = "false") Boolean showAuthorUsername ) {
         if (userService.userRepository.findByUsername(request.getUserPrincipal().getName()).getRoles().equals(rolesRepository.findByName("USER"))) {
-            Page<ChangeRequestHttpResponseDTO> list = changeService.findAllByUserIdAndSortByDate(page, size, request.getUserPrincipal().getName());
+            Page<ChangeRequestHttpResponseDTO> list = changeService.findAllByUserIdAndSortByDate(page, size, request.getUserPrincipal().getName(), showAuthorUsername);
             return ResponseEntity.ok().body(list);
         }
-        Page<ChangeRequestHttpResponseDTO> list = changeService.findAllSortByDate(page, size);
+        Page<ChangeRequestHttpResponseDTO> list = changeService.findAllSortByDate(page, size, showAuthorUsername);
         return ResponseEntity.ok().body(list);
     }
 
@@ -123,7 +136,7 @@ public class ChangeController {
         try {
             ChangeRequest convertedChangeRequest = change.toChangeRequest(userService.userRepository);
             changeService.save(convertedChangeRequest);
-            ChangeRequestHttpResponseDTO changeRequestHttpResponse = changeService.toDto(convertedChangeRequest);
+            ChangeRequestHttpResponseDTO changeRequestHttpResponse = changeService.toDto(convertedChangeRequest, false);
             return ResponseEntity.created(URI.create("/api/v1/change/" + changeRequestHttpResponse.getId())).body(changeRequestHttpResponse);
 
         } catch (Exception e) {

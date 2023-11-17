@@ -2,6 +2,7 @@ package edu.ucmo.cbbackend.dto.request;
 
 import edu.ucmo.cbbackend.model.*;
 import edu.ucmo.cbbackend.repository.UserRepository;
+import edu.ucmo.cbbackend.service.ChangeService;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.FutureOrPresent;
 import jakarta.validation.constraints.PositiveOrZero;
@@ -39,6 +40,7 @@ public class ChangeRequestBodyDTO implements Serializable {
     private ChangeRequestApproveOrDeny approveOrDeny;
     private ChangeRequestState state;
     private String Implementer = "Not Assigned";
+    private Roles roles;
 
     public ChangeRequest toChangeRequest(UserRepository userRepository) {
         User user = userRepository.findById(authorId).orElseThrow(() -> new RuntimeException("User not found"));
@@ -55,6 +57,8 @@ public class ChangeRequestBodyDTO implements Serializable {
                 .timeToRevert(timeToRevert)
                 .state(state)
                 .Implementer(Implementer)
+                .approveOrDeny(approveOrDeny)
+                .roles(roles)
                 .build();
     }
 

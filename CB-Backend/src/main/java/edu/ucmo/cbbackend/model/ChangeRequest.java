@@ -87,5 +87,8 @@ public class ChangeRequest implements Serializable {
     @Min(3)
     private String Implementer = "Not Assigned";
 
+    @ManyToOne
+    @Enumerated(EnumType.STRING)
+    private Roles roles;
 
 }
