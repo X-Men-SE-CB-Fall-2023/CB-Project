@@ -1,5 +1,7 @@
 import React, {useEffect, useState} from "react"
 import { useQuery } from "@tanstack/react-query"
+import { Link, useNavigate } from "react-router-dom"
+import NavBar from "../components/NavBar"
 import {Link, useNavigate} from "react-router-dom"
 import apiFetch from "../utils/apiFetch"
 import dayjs from "dayjs"
@@ -13,9 +15,19 @@ function Dashboard() {
 		queryFn: async () => {
 			const res = await apiFetch("GET", "/api/v1/change")
 			console.log(res.data)
-			return res.data.content
+			return res.data
 		},
 	})
+	const useNav = useNavigate()
+
+	if (isError) {
+		return (
+			<div>
+				<NavBar />
+				<p> There is an error </p>
+			</div>
+		)
+	}
 	const navigate = useNavigate()
 
 	const handleCreateChangeRequest = () => {
@@ -52,7 +64,7 @@ function Dashboard() {
 
 	return (
 		//	https://flowbite.com/docs/components/tables/
-		<div className="">
+		<div>
 			<NavBar />
 			<div className="flex flex-col m-10 sm: mx-4 opacity-75">
 				<div className="m-6 p-4 relative overflow-x-auto shadow-md sm:rounded-lg bg-slate-300">
@@ -235,4 +247,4 @@ function NavBar() {
 
 
 
-	export default Dashboard
+export default Dashboard

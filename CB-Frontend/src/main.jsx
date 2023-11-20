@@ -14,12 +14,13 @@ ReactDOM.createRoot(document.getElementById("root")).render(
 	<React.StrictMode>
 		<Providers>
 			<BrowserRouter>
-				<Routes>
-					<Route path="/" element={<Login />} />
-					<Route path="/dashboard" element={<Dashboard />} />
-					<Route path="/createuser" element={<CreateUser />} />
-					<Route path="/changerequest" element={<ChangeRequest />} />
-				</Routes>
+					<Routes>
+						<Route path="/" element={<Login />} />
+						<Route path="/dashboard" element={<Dashboard />} />
+						<Route path="/createuser" element={<CreateUser />} />
+						<Route path="/change-request/:id" element={<ChangeRequestPage />} />
+						<Route path="/createuser" element={<CreateUser />} />
+					</Routes>
 			</BrowserRouter>
 		</Providers>
 	</React.StrictMode>
