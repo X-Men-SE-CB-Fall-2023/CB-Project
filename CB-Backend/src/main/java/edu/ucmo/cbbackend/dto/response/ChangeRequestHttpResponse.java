@@ -20,7 +20,6 @@ public class ChangeRequestHttpResponse {
     private Long applicationId;
     private String description;
     private String reason;
-
     private Optional<String> Username;
 
     private Date DateCreated;
