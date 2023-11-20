@@ -1,6 +1,6 @@
-import { useState } from "react"
+import React, {useEffect, useState} from "react"
 import { useQuery } from "@tanstack/react-query"
-import { useNavigate } from "react-router-dom"
+import {Link, useNavigate} from "react-router-dom"
 import apiFetch from "../utils/apiFetch"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
@@ -16,6 +16,11 @@ function Dashboard() {
 			return res.data.content
 		},
 	})
+	const navigate = useNavigate()
+
+	const handleCreateChangeRequest = () => {
+		navigate('/changerequest')
+	}
 
 	if (isLoading) {
 		//https://flowbite.com/docs/components/spinner/
@@ -47,124 +52,187 @@ function Dashboard() {
 
 	return (
 		//	https://flowbite.com/docs/components/tables/
-		<div>
+		<div className="">
 			<NavBar />
-			<div className="relative overflow-x-auto shadow-md sm:rounded-lg">
-				<table className="w-full text-sm text-left text-gray-500">
-					<thead className="text-xs text-gray-700 uppercase bg-gray-50">
-						<tr>
-							<th scope="col" className="px-6 py-3">
-								Id
-							</th>
-							<th scope="col" className="px-6 py-3">
-								Application Id
-							</th>
-							<th scope="col" className="px-6 py-3">
-								Change Type
-							</th>
-							<th scope="col" className="px-6 py-3">
-								Date
-							</th>
-						</tr>
-					</thead>
-					<tbody className="bg-white">
-						{data.map(change => (
-							<tr className="bg-white" key={change.id}>
-								<th
-									scope="row"
-									className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-									{change.id}
-								</th>
-								<td
-									className="px-6 py-4			console.log(res.data)
- ">
-									{change.applicationId}
-								</td>
-								<td className="px-6 py-4 ">{change.changeType}</td>
-								<td className="px-6 py-4 ">
-									{dayjs(change.dateCreated).format("DD/MM/YYYY")}
-								</td>
-							</tr>
-						))}
-					</tbody>
-				</table>
+			<div className="flex flex-col m-10 sm: mx-4 opacity-75">
+				<div className="m-6 p-4 relative overflow-x-auto shadow-md sm:rounded-lg bg-slate-300">
+					<div className="inline-block min-w-full">
+						<div className="overflow-hidden">
+							<table className="w-full text-sm text-left text-gray-50">
+								<thead className="text-xs text-gray-700 uppercase bg-gray-50 t">
+									<tr className=" transition duration-200 ease-in-out">
+										<th scope="col" className="px-6 py-3 hover:bg-neutral-300 transition duration-300 ease-in-out">
+											Id
+										</th>
+										<th scope="col" className="px-6 py-3 hover:bg-neutral-300 transition duration-300 ease-in-out">
+											Application Id
+										</th>
+										<th scope="col" className="px-6 py-3 hover:bg-neutral-300 transition duration-300 ease-in-out">
+											Change Type
+										</th>
+										<th scope="col" className="px-6 py-3 hover:bg-neutral-300 transition duration-300 ease-in-out">
+											Date
+										</th>
+									</tr>
+								</thead>
+								<tbody className="bg-white">
+									{data.map(change => (
+										<tr className="bg-white" key={change.id}>
+											<th
+												scope="row"
+												className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+												{change.id}
+											</th>
+											<td
+												className="px-6 py-4			console.log(res.data)">
+												{change.applicationId}
+											</td>
+											<td className="px-6 py-4 ">{change.changeType}</td>
+											<td className="px-6 py-4 ">
+												{dayjs(change.dateCreated).format("DD/MM/YYYY")}
+											</td>
+										</tr>
+									))}
+								</tbody>
+							</table>
+						</div>
+					</div>
+				</div>
 			</div>
 		</div>
 	)
 }
 
-function NavBar() {
-	const [showNav, setShowNav] = useState(false)
-	const navigate = useNavigate()
 
+function NavBar() {
+	const [showNav, setShowNav] = useState(false);
 	const toggleNav = () => {
-		setShowNav(!showNav)
-	}
+		setShowNav(!showNav);
+	};
+	const [innerWidth, setInnerWidth] = useState(window.innerWidth);
+
+	useEffect(() => {
+		const handleResize = () => {
+			setInnerWidth(window.innerWidth);
+		};
+
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []); // Run only on mount and unmount
+
 
 	return (
 		<div>
-			<nav className="bg-green-800 relative">
-				<div className="max-w-screen flex flex-wrap items-center justify-between mx-auto p-4">
-					<a className="flex items-center">
+			<nav className={`relative ${innerWidth < 768 ? 'bg-green-800' : 'bg-slate-200'}`}>
+				<div className="max-w-screen flex flex-wrap items-center p-2 relative">
+					{/* Displayed on screens smaller than 768px */}
+					<a className={`${innerWidth < 768 ? 'flex' : 'hidden'} items-center mr-auto`}>
 						<img
-							src="cblogowhite00c2aa7d.svg"
+							src="whitelogo.svg"
 							className="h-12 mr-3"
 							alt="Commerce Bank Logo"
 						/>
 					</a>
-					<button
-						onClick={toggleNav}
-						className="inline-flex items-center p-2 w-12 h-12 justify-center text-sm text-gray-500 rounded-lg md:hidden focus:outline-none focus:ring-2 dark:text-gray-400"
-						aria-controls="navbar-default"
-						aria-expanded={showNav}>
-						<span className="sr-only">Open main menu</span>
-						<svg
-							className="w-5 h-5"
-							aria-hidden="true"
-							xmlns="http://www.w3.org/2000/svg"
-							fill="none"
-							viewBox="0 0 17 14">
-							<path
-								stroke="currentColor"
-								strokeLinecap="round"
-								strokeLinejoin="round"
-								strokeWidth="2"
-								d="M1 1h15M1 7h15M1 13h15"
-							/>
-						</svg>
-					</button>
+
+					{/* Displayed on screens 768px and larger */}
+					<a className={`${innerWidth >= 768 ? 'flex' : 'hidden'} items-center mr-auto`}>
+						<img
+							src="greenlogo.png"
+							className="h-12 mr-3"
+							alt="Commerce Bank Logo"
+						/>
+					</a>
+
+					<div className="flex">
+						{/* "Submit Request" link */}
+						<a
+							href="http://localhost:5173/changerequest"
+							className={`${innerWidth >= 768 ? 'flex' : 'hidden'} items-center mr-4 py-2 pl-3 pr-4 text-black font-bold bg-slate-100 hover:bg-slate-200 transition duration-300 ease-in-out`}
+							aria-current="page"
+						>
+							Submit Request
+						</a>
+
+						{/* "Dashboard" link */}
+						<a
+							href="http://localhost:5173/dashboard#"
+							className={`${innerWidth >= 768 ? 'flex' : 'hidden'} items-center mr-4 py-2 pl-3 pr-4 text-black font-bold bg-slate-200 hover:bg-slate-200`}
+							aria-current="page"
+						>
+							Dashboard
+						</a>
+
+						<button
+							onClick={() => {
+								localStorage.removeItem("token");
+								navigate("/");
+							}}
+							className={`${innerWidth >= 768 ? 'text-black' : 'text-white'} block py-2 px-4 border-x-2 border-slate-500 bg-transparent hover:bg-slate-300 transition duration-300 ease-in-out`}
+							aria-current="page"
+						>
+							Sign Out
+						</button>
+
+						<button
+							onClick={toggleNav}
+							className="inline-flex items-center m-2 w-12 h-12 justify-center text-sm text-gray-500 rounded-lg md:hidden focus:outline-none focus:ring-2 dark:text-gray-400"
+							aria-controls="navbar-default"
+							aria-expanded={showNav}
+						>
+							<span className="sr-only">Open main menu</span>
+							<svg
+								className="w-5 h-5"
+								aria-hidden="true"
+								xmlns="http://www.w3.org/2000/svg"
+								fill="none"
+								viewBox="0 0 17 14"
+							>
+								<path
+									stroke="currentColor"
+									strokeLinecap="round"
+									strokeLinejoin="round"
+									strokeWidth="2"
+									d="M1 1h15M1 7h15M1 13h15"
+								/>
+							</svg>
+						</button>
+					</div>
 
 					{/* The responsive navigation controlled by the showNav state */}
-					<div
-						className={`w-full md:block md:w-auto ${showNav ? "" : "hidden"}`}
-						id="navbar-default">
-						<ul className="font-medium md:text-lg flex flex-col mx-2 my-4 p-1 md:p-0 border border-gray-100 rounded-lg md:flex-row md:space-x-8 md:mt-0 md:border-0 bg-slate-300 md:bg-transparent text-center">
-							{/* Your navigation links */}
-							<li className="m-0.5">
-								<a
-									href="http://localhost:5173/dashboard#"
-									className=" block py-2 pl-3 pr-4 text-black md:text-white font-bold bg-slate-200 rounded md:bg-transparent md:p-0"
-									aria-current="page">
-									Dashboard
-								</a>
-							</li>
-							<li className="m-0.5">
-								<button
-									onClick={() => {
-										localStorage.removeItem("token")
-										navigate("/")
-									}}
-									className="block py-2 pl-3 pr-4 text-black md:text-white font-bold bg-slate-100 rounded md:bg-transparent md:p-0 hover:bg-slate-200"
-									aria-current="page">
-									Sign Out
-								</button>
-							</li>
-						</ul>
-					</div>
+					{showNav && (
+						<div
+							className={`${innerWidth < 768 ? 'absolute block' : 'hidden'} max-w-screen top-full left-0 right-0 bg-white border border-gray-100 rounded-md shadow-md mt-2 z-10`}
+							id="navbar-dropdown"
+						>
+							<ul className="font-medium md:text-lg flex flex-col p-2 space-y-2">
+								<li>
+									<Link
+										to="/createchange"
+										className={`${innerWidth >= 768 ? 'bg-transparent' : 'bg-transparent hover:bg-slate-200'} block w-full py-2 pl-3 pr-4 text-black font-bold transition duration-300 ease-in-out"`}
+										aria-current="page"
+									>
+										Submit Request
+									</Link>
+								</li>
+								<li>
+									<Link
+										to="/dashboard"
+										className="block w-full py-2 pl-3 pr-4 text-black font-bold bg-slate-200 hover:bg-slate-200"
+										aria-current="page"
+									>
+										Dashboard
+									</Link>
+								</li>
+							</ul>
+						</div>
+					)}
 				</div>
 			</nav>
 		</div>
-	)
+	);
 }
 
-export default Dashboard
+
+
+
+	export default Dashboard

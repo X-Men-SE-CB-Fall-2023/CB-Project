@@ -13,8 +13,7 @@ const schema = yup.object().shape({
     username: yup.string().required("Username is required"),
     password: yup.string().required("Password is required"),
     roles: yup.object().shape({
-        name: yup.string().required("Role is required"),
-    }),
+        name: yup.string().required("Role is required"),}),
 });
 
 export default function Register() {
