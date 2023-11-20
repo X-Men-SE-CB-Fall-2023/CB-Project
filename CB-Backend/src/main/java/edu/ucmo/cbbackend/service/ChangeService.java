@@ -51,25 +51,25 @@ public class ChangeService {
     }
 
     public ChangeRequestHttpResponseDTO toDto (ChangeRequest changeRequest, boolean showUsername){
-            return new ChangeRequestHttpResponseDTO(
-                    changeRequest.getId(),
-                    changeRequest.getAuthor().getId(),
-                    changeRequest.getChangeType(),
-                    changeRequest.getApplicationId(),
-                    changeRequest.getDescription(),
-                    changeRequest.getReason(),
-                    changeRequest.getDateCreated(),
-                    changeRequest.getDateUpdated(),
-                    changeRequest.getTimeWindowStart(),
-                    changeRequest.getTimeWindowEnd(),
-                    changeRequest.getTimeToRevert(),
-                    changeRequest.getApproveOrDeny(),
-                    changeRequest.getState(),
-                    changeRequest.getImplementer(),
-                    Optional.ofNullable(showUsername ? changeRequest.getAuthor().getUsername() : null),
-                    changeRequest.getRoles()
+        return new ChangeRequestHttpResponseDTO(changeRequest.getId(),
+                changeRequest.getAuthor().getId(),
+                changeRequest.getChangeType(),
+                changeRequest.getApplicationId(),
+                changeRequest.getDescription(),
+                changeRequest.getReason(),
+                changeRequest.getDateCreated(),
+                changeRequest.getDateUpdated(),
+                changeRequest.getTimeWindowStart(),
+                changeRequest.getTimeWindowEnd(),
+                changeRequest.getTimeToRevert(),
+                changeRequest.getApproveOrDeny(),
+                changeRequest.getState(),
+                changeRequest.getImplementer(),
+                showUsername ? Optional.of(changeRequest.getAuthor().getUsername()) : Optional.empty(),
+                changeRequest.getRiskLevel(),
+                changeRequest.getRoles()
+        );
 
-            );
     }
 
     public boolean changeRequestDateValidation(ChangeRequestBodyDTO changeRequestBodyDTO){

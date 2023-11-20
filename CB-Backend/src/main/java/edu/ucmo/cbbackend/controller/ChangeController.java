@@ -78,7 +78,8 @@ public class ChangeController {
                 changeRequest.setApproveOrDeny(changeRequestBody.getApproveOrDeny());
             if (changeRequestBody.getState() != null)
                 changeRequest.setState(changeRequestBody.getState());
-
+            if (changeRequestBody.getRiskLevel() != null)
+                changeRequest.setRiskLevel(changeRequestBody.getRiskLevel());
             changeRequest.setDateUpdated(new Date());
 
             changeService.save(changeRequest);

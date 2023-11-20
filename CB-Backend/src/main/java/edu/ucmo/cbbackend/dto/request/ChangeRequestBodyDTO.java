@@ -41,6 +41,7 @@ public class ChangeRequestBodyDTO implements Serializable {
     private ChangeRequestState state;
     private String Implementer = "Not Assigned";
     private Roles roles;
+    private ChangeRequestRiskLevel riskLevel;
 
     public ChangeRequest toChangeRequest(UserRepository userRepository) {
         User user = userRepository.findById(authorId).orElseThrow(() -> new RuntimeException("User not found"));
@@ -59,6 +60,7 @@ public class ChangeRequestBodyDTO implements Serializable {
                 .Implementer(Implementer)
                 .approveOrDeny(approveOrDeny)
                 .roles(roles)
+                .riskLevel(riskLevel)
                 .build();
     }
 

@@ -91,4 +91,10 @@ public class ChangeRequest implements Serializable {
     @Enumerated(EnumType.STRING)
     private Roles roles;
 
+    @Column(nullable = false)
+    @Enumerated(EnumType.STRING)
+    private ChangeRequestRiskLevel riskLevel;
+
+
+
 }

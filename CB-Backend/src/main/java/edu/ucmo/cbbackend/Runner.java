@@ -128,6 +128,7 @@ public class Runner implements CommandLineRunner {
                 ChangeType changeType;
                 ChangeRequestState changeRequestState;
                 ChangeRequestApproveOrDeny approveOrDeny;
+                ChangeRequestRiskLevel changeRequestRiskLevel;
                 // genreater random number from 0 to 2
                 int random = (int) (Math.random() * 3);
                 if (random == 0) {
@@ -153,14 +154,27 @@ public class Runner implements CommandLineRunner {
                     changeRequestState = ChangeRequestState.Completed;
                 }
 
-                random = (int) (Math.random() * 1);
+                random = (int) (Math.random() * 2);
 
                 if(random == 0 ){
                     approveOrDeny = ChangeRequestApproveOrDeny.APPROVE;
-                }
-                else {
+                } else if (random == 1){
+                    approveOrDeny = ChangeRequestApproveOrDeny.PENDING;
+                } else {
                     approveOrDeny = ChangeRequestApproveOrDeny.DENY;
                 }
+            random = (int) (Math.random() * 2);
+
+
+            if( random == 0){
+                changeRequestRiskLevel = ChangeRequestRiskLevel.LOW;
+            }
+            else if (random == 1){
+                changeRequestRiskLevel = ChangeRequestRiskLevel.MEDIUM;
+            }
+            else {
+                changeRequestRiskLevel = ChangeRequestRiskLevel.HIGH;
+            }
 
                 ChangeRequest changeRequest = ChangeRequest.builder()
                         .applicationId(Long.valueOf(faker.number().digits(10)))
@@ -176,6 +190,7 @@ public class Runner implements CommandLineRunner {
                         .timeWindowEnd(faker.date().future(700, 366 ,java.util.concurrent.TimeUnit.DAYS))
                         .approveOrDeny(approveOrDeny)
                         .state(changeRequestState)
+                        .riskLevel(changeRequestRiskLevel)
                         .roles(user.getRoles())
                         .build();
                 changeService.save(changeRequest);
