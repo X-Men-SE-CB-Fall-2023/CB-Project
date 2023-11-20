@@ -4,6 +4,10 @@ import edu.ucmo.cbbackend.model.ChangeRequest;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
+
+import java.util.Date;
+import java.util.Optional;
+
 @Data
 @AllArgsConstructor
 
@@ -16,7 +20,10 @@ public class ChangeRequestHttpResponse {
     private Long applicationId;
     private String description;
     private String reason;
-    private Optional Username;
+
+    private Optional<String> Username;
+
+    private Date DateCreated;
 
     public ChangeRequestHttpResponse(ChangeRequest changeRequest) {
         this.id = changeRequest.getId();
@@ -26,6 +33,8 @@ public class ChangeRequestHttpResponse {
         this.description = changeRequest.getDescription();
         this.reason = changeRequest.getReason();
         this.Username = changeRequest.getUsername();
+        this.DateCreated = changeRequest.getDateCreated();
+        this.DateCreated = changeRequest.getDateUpdated();
     }
 
 
