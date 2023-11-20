@@ -67,7 +67,8 @@ public class ChangeService {
                 changeRequest.getImplementer(),
                 showUsername ? Optional.of(changeRequest.getAuthor().getUsername()) : Optional.empty(),
                 changeRequest.getRiskLevel(),
-                changeRequest.getRoles()
+                changeRequest.getRoles(),
+                changeRequest.getBackoutPlan()
         );
 
     }

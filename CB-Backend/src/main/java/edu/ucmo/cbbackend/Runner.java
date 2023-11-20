@@ -191,6 +191,7 @@ public class Runner implements CommandLineRunner {
                         .approveOrDeny(approveOrDeny)
                         .state(changeRequestState)
                         .riskLevel(changeRequestRiskLevel)
+                        .backoutPlan(faker.lorem().sentence(100))
                         .roles(user.getRoles())
                         .build();
                 changeService.save(changeRequest);

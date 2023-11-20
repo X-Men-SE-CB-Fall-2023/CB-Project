@@ -68,8 +68,6 @@ public class ChangeController {
                 changeRequest.setTimeToRevert(changeRequestBody.getTimeToRevert());
             if (changeRequestBody.getDateCreated() != null)
                 changeRequest.setDateCreated(changeRequestBody.getDateCreated());
-            if (changeRequestBody.getDateUpdated() != null)
-                changeRequest.setDateUpdated(changeRequestBody.getDateUpdated());
             if (changeRequestBody.getAuthorId() != null)
                 changeRequest.setAuthor(userService.loadUserById(changeRequestBody.getAuthorId()));
             if (changeRequestBody.getRoles() != null)
@@ -80,8 +78,11 @@ public class ChangeController {
                 changeRequest.setState(changeRequestBody.getState());
             if (changeRequestBody.getRiskLevel() != null)
                 changeRequest.setRiskLevel(changeRequestBody.getRiskLevel());
-            changeRequest.setDateUpdated(new Date());
+            if (changeRequestBody.getBackoutPlan() != null){
+                changeRequest.setBackoutPlan(changeRequestBody.getBackoutPlan());
+            }
 
+             changeRequest.setDateUpdated(new Date());
             changeService.save(changeRequest);
             ChangeRequestHttpResponseDTO changeRequestHttpResponse = changeService.toDto(changeRequest, false);
             return ResponseEntity.ok().body(changeRequestHttpResponse);

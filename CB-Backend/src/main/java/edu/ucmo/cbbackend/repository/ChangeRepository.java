@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Repository;
 
 
@@ -14,7 +15,22 @@ public interface ChangeRepository extends PagingAndSortingRepository<ChangeReque
 
     ChangeRequest findById(long id);
 
-    Page<ChangeRequest> findAllByAuthor(User author, Pageable pageable);
+    Page<ChangeRequest> findAllByAuthorAndState_Frozen(User author, Pageable pageable);
+    Page<ChangeRequest> findAllByAuthorAndState_Application(User author, Pageable pageable);
+
+    Page<ChangeRequest> findAllByAuthorAndState_Department(User author, Pageable pageable);
+
+    Page<ChangeRequest> findAllByAuthorAndState_Completed(User author, Pageable pageable);
+
+    Page<ChangeRequest> findAllByState_Frozen(Pageable pageable);
+
+    Page<ChangeRequest> findAllByState_Application(Pageable pageable);
+
+    Page<ChangeRequest> findAllByState_Department(Pageable pageable);
+
+    Page<ChangeRequest> findAllByState_Completed(Pageable pageable);
+
+    Page<ChangeRequest> findByRoles_Name(String name, Pageable pageable);
 
 
 }
