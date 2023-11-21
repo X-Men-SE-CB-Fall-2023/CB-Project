@@ -200,6 +200,7 @@ function CreateChangeRequest() {
 											type="radio"
 											name="risk"
 											value="MEDIUM"
+											required
 											{...register("riskLevel", {required: true})}
 										/>
 										<label
@@ -215,6 +216,7 @@ function CreateChangeRequest() {
 											type="radio"
 											name="risk"
 											value="HARD"
+											required
 											{...register("riskLevel", {required: true})}
 										/>
 										<label
@@ -233,7 +235,7 @@ function CreateChangeRequest() {
 									Cancel
 								</button>
 								<button
-
+									type="submit"
 									className="hover:border-black border-2 bg-gray-200 font-bold text-black p-2 rounded-lg m-2">
 									Submit
 								</button>
