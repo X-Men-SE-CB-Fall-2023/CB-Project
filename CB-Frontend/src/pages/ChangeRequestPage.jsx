@@ -4,56 +4,67 @@ import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
 import React, { useState } from "react"
 import NavBar from "../components/NavBar"
-import apiFetch from "../utils/apiFetch.js";
-import { useMutation, useQueryClient, QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import toast from "react-hot-toast";
-import axios, {HttpStatusCode} from "axios";
+import apiFetch from "../utils/apiFetch.js"
+import {
+	useMutation,
+	useQueryClient,
+	QueryClient,
+	QueryClientProvider,
+} from "@tanstack/react-query"
+import toast from "react-hot-toast"
+import axios, { HttpStatusCode } from "axios"
 
 const ABCD = () => {
 	const queryClient = useQueryClient()
 
-	const {mutate} = useMutation({
-		mutationFn: async(data) => {
-			const res = await apiFetch("POST", "/api/v1/change", data, null)
-			return res;
+	const { mutateAsync } = useMutation({
+		mutationFn: async data => {
+			const res = await apiFetch("POST", "/api/v1/change", data, {})
+			console.log(res)
 		},
 		onSuccess: () => {
-			queryClient.invalidateQueries({queryKey: ['/change']})
+			queryClient.invalidateQueries({ queryKey: ["/change"] })
 		},
 	})
 
-	return <CreateChangeRequest />
+	return <CreateChangeRequest mutate={mutateAsync} />
 }
 
-function CreateChangeRequest() {
+function CreateChangeRequest({ mutate }) {
 	const schema = yup.object().shape({
-		authorId: yup.number().required('Author ID is required'),
-		changeType: yup.string().oneOf(['PLANNED', 'UNPLANNED', 'EMERGENCY']).required('Change type is required'),
-		applicationId: yup.number().required('Application ID is required'),
+		authorId: yup.number().required("Author ID is required"),
+		changeType: yup
+			.string()
+			.oneOf(["PLANNED", "UNPLANNED", "EMERGENCY"])
+			.required("Change type is required"),
+		applicationId: yup.number().required("Application ID is required"),
 		title: yup.string().required("Title is required"),
 
-		timeWindowStart: yup.string().required('Both date and time is required'),
-		timeWindowEnd: yup.string().required('Both date and time is required'),
+		timeWindowStart: yup.string().required("Both date and time is required"),
+		timeWindowEnd: yup.string().required("Both date and time is required"),
 
-		description: yup.string().required('Description is required'),
-		reason: yup.string().required('Reason is required'),
+		description: yup.string().required("Description is required"),
+		reason: yup.string().required("Reason is required"),
 		backoutPlan: yup.string().required("Backout plan is required"),
-		timeToRevert: yup.number().required('Time to revert is required'),
+		timeToRevert: yup.number().required("Time to revert is required"),
 
-		approveOrDeny: yup.string().oneOf(['APPROVE', 'DENY']).required('Approval status is required'),
-		state: yup.string().required('State is required'),
+		approveOrDeny: yup
+			.string()
+			.oneOf(["APPROVE", "DENY"])
+			.required("Approval status is required"),
+		state: yup.string().required("State is required"),
 		roles: yup.object().shape({
-			name: yup.string().required('Role name is required'),
+			name: yup.string().required("Role name is required"),
 		}),
-		riskLevel: yup.string().oneOf(['LOW', 'MEDIUM', 'HIGH']).required('Risk level is required'),
-		implementer: yup.string().required('Implementer is required'),
-	});
+		riskLevel: yup
+			.string()
+			.oneOf(["LOW", "MEDIUM", "HIGH"])
+			.required("Risk level is required"),
+		implementer: yup.string().required("Implementer is required"),
+	})
 
-	const {
-		register,
-		handleSubmit,
-	} = useForm({
-		resolver: yupResolver(schema),
+	const { register, handleSubmit } = useForm({
+		// resolver: yupResolver(schema),
 	})
 
 	const onSubmit = data => {
@@ -63,31 +74,25 @@ function CreateChangeRequest() {
 
 	return (
 		<div className="flex-wrap w-full">
-			<NavBar/>
+			<NavBar />
 
 			<div className="p-4 rounded-full">
 				<div>
-					<form onSubmit={handleSubmit(onSubmit)} className="Form px-4">
+					<form onSubmit={handleSubmit(mutate)} className="Form px-4">
 						<div className="changeType flex items-center p-2">
 							<label className="m-2">Change Type:</label>
 							<select
 								id="ChangeType"
 								required
-								{...register("changeType", {required: true})}
+								{...register("changeType", { required: true })}
 								className="bg-slate-200 border border-gray-300 text-gray-900 font-medium rounded-lg p-2"
 								placeholder="Select Change Type">
 								<option disabled value="">
 									Select Change Type
 								</option>
-								<option value="PLANNED">
-									Planned
-								</option>
-								<option value="UNPLANNED">
-									Unplanned
-								</option>
-								<option value="EMERGENCY">
-									Emergency
-								</option>
+								<option value="PLANNED">Planned</option>
+								<option value="UNPLANNED">Unplanned</option>
+								<option value="EMERGENCY">Emergency</option>
 							</select>
 						</div>
 
@@ -97,7 +102,7 @@ function CreateChangeRequest() {
 								type="number"
 								autoComplete="off"
 								required
-								{...register("applicationId", {required: true})}
+								{...register("applicationId", { required: true })}
 								className="flex-box m-2 block p-2 text-gray-900 border-2 border-gray-400 rounded-lg bg-gray-50 outline-none sm:text-md"
 							/>
 						</div>
@@ -108,7 +113,7 @@ function CreateChangeRequest() {
 								type="text"
 								autoComplete="off"
 								required
-								{...register("title", {required: true})}
+								{...register("title", { required: true })}
 								className="flex-box m-2 block p-2 text-gray-900 border-2 border-gray-400 rounded-lg bg-gray-50 outline-none sm:text-md"
 								placeholder="Enter Title"
 							/>
@@ -120,9 +125,8 @@ function CreateChangeRequest() {
 								<input
 									type="datetime-local"
 									required
-									{...register("timeWindowStart", {required: true})}
+									{...register("timeWindowStart", { required: true })}
 									className="flex-box m-2 block p-2 text-gray-900 border-2 border-gray-400 rounded-lg bg-gray-50 outline-none sm:text-md"
-
 								/>
 							</div>
 							<div className="end flex items-center p-2">
@@ -130,7 +134,7 @@ function CreateChangeRequest() {
 								<input
 									type="datetime-local"
 									required
-									{...register("timeWindowEnd", {required: true})}
+									{...register("timeWindowEnd", { required: true })}
 									className="flex-box m-2 block p-2 text-gray-900 border-2 border-gray-400 rounded-lg bg-gray-50 outline-none sm:text-md"
 								/>
 							</div>
@@ -143,7 +147,7 @@ function CreateChangeRequest() {
 								<textarea
 									className="flex-box resize-none m-2 w-full block p-2 text-gray-900 border-2 border-gray-400 rounded-lg bg-gray-50 outline-none sm:text-md"
 									required
-									{...register("description", {required: true})}
+									{...register("description", { required: true })}
 								/>
 							</div>
 							<div className="reason">
@@ -151,7 +155,7 @@ function CreateChangeRequest() {
 								<textarea
 									className="flex-box resize-none m-2 w-full block p-2 text-gray-900 border-2 border-gray-400 rounded-lg bg-gray-50 outline-none sm:text-md"
 									required
-									{...register("reason", {required: true})}
+									{...register("reason", { required: true })}
 								/>
 							</div>
 							<div>
@@ -159,20 +163,17 @@ function CreateChangeRequest() {
 								<textarea
 									className="flex-box resize-none m-2 w-full block p-2 text-gray-900 border-2 border-gray-400 rounded-lg bg-gray-50 outline-none sm:text-md"
 									required
-									{...register("backoutPlan", {required: true})}
+									{...register("backoutPlan", { required: true })}
 								/>
 							</div>
 							<div className="flex items-center p-2">
-								<label className="m-2"
-								>
-									Minutes to execute plan:
-								</label>
+								<label className="m-2">Minutes to execute plan:</label>
 								<input
 									type="number"
 									autoComplete="off"
 									className="flex-box m-2 block p-2 text-gray-900 border-2 border-gray-400 rounded-lg bg-gray-50 outline-none sm:text-md"
 									required
-									{...register("timeToRevert", {required: true})}
+									{...register("timeToRevert", { required: true })}
 								/>
 							</div>
 							<div className="risk flex p-2">
@@ -185,7 +186,7 @@ function CreateChangeRequest() {
 											type="radio"
 											name="risk"
 											value="LOW"
-											{...register("riskLevel", {required: true})}
+											{...register("riskLevel", { required: true })}
 										/>
 										<label
 											htmlFor="riskLow"
@@ -201,7 +202,7 @@ function CreateChangeRequest() {
 											name="risk"
 											value="MEDIUM"
 											required
-											{...register("riskLevel", {required: true})}
+											{...register("riskLevel", { required: true })}
 										/>
 										<label
 											htmlFor="riskMed"
@@ -217,7 +218,7 @@ function CreateChangeRequest() {
 											name="risk"
 											value="HARD"
 											required
-											{...register("riskLevel", {required: true})}
+											{...register("riskLevel", { required: true })}
 										/>
 										<label
 											htmlFor="riskHigh"
@@ -230,8 +231,7 @@ function CreateChangeRequest() {
 						</div>
 						<div className="flex items-center justify-end">
 							<div className="Submit">
-								<button
-									className="hover:border-black border-2 bg-gray-200 font-bold text-black p-2 rounded-lg m-2">
+								<button className="hover:border-black border-2 bg-gray-200 font-bold text-black p-2 rounded-lg m-2">
 									Cancel
 								</button>
 								<button
