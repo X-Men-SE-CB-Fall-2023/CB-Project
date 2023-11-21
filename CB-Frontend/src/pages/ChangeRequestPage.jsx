@@ -2,46 +2,38 @@ import * as yup from "yup"
 import dayjs from "dayjs"
 import { useForm } from "react-hook-form"
 import { yupResolver } from "@hookform/resolvers/yup"
-import React, { useEffect, useState } from "react"
-import { useNavigate } from "react-router-dom"
+import React, { useState } from "react"
 import NavBar from "../components/NavBar"
+import apiFetch from "../utils/apiFetch.js";
+import { useMutation, useQueryClient, QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import toast from "react-hot-toast";
+import axios, {HttpStatusCode} from "axios";
+
+const ABCD = () => {
+	const queryClient = useQueryClient()
+
+	const {mutate} = useMutation({
+		mutationFn: async(data) => {
+			const res = await apiFetch("POST", "/api/v1/change", data, null)
+			return res;
+		},
+		onSuccess: () => {
+			queryClient.invalidateQueries({queryKey: ['/change']})
+		},
+	})
+
+	return <CreateChangeRequest />
+}
 
 function CreateChangeRequest() {
 	const schema = yup.object().shape({
 		authorId: yup.number().required('Author ID is required'),
-		changeType: yup.string().oneOf(['PLANNED', 'UNPLANNED']).required('Change type is required'),
+		changeType: yup.string().oneOf(['PLANNED', 'UNPLANNED', 'EMERGENCY']).required('Change type is required'),
 		applicationId: yup.number().required('Application ID is required'),
 		title: yup.string().required("Title is required"),
 
-		dateCreated: yup.date().required('Date created is required'),
-		dateUpdated: yup.date().required('Date updated is required'),
-		timeWindowStart: yup
-			.mixed()
-			.test('combinedDateTime', 'Scheduled Start Date-Time is required', function (value) {
-				const { date, time } = this.parent;
-
-				// Combine date and time into a single date-time string
-				const combinedDateTime = new Date(`${date} ${time}`);
-
-				// Check if the combined value is a valid date-time
-				return !isNaN(combinedDateTime);
-			})
-			.required('Scheduled Start Date-Time is required'),
-
-		// Combined field using custom validation for timeWindowEnd
-		timeWindowEnd: yup
-			.mixed()
-			.test('combinedDateTime', 'Scheduled End Date-Time is required', function (value) {
-				const { date, time } = this.parent;
-
-				// Combine date and time into a single date-time string
-				const combinedDateTime = new Date(`${date} ${time}`);
-
-				// Check if the combined value is a valid date-time
-				return !isNaN(combinedDateTime);
-			})
-			.required('Scheduled End Date-Time is required'),
-
+		timeWindowStart: yup.string().required('Both date and time is required'),
+		timeWindowEnd: yup.string().required('Both date and time is required'),
 
 		description: yup.string().required('Description is required'),
 		reason: yup.string().required('Reason is required'),
@@ -60,24 +52,19 @@ function CreateChangeRequest() {
 	const {
 		register,
 		handleSubmit,
-		formState: { isValid },
 	} = useForm({
 		resolver: yupResolver(schema),
 	})
 
 	const onSubmit = data => {
-		data.dataCreated = dayjs().format();
-		console.log(data);
-
-		const createChangeRequest = async () => {
-
-		};
-		createChangeRequest();
+		//mutation(data)
+		console.log(data)
 	}
 
 	return (
 		<div className="flex-wrap w-full">
-			<NavBar />
+			<NavBar/>
+
 			<div className="p-4 rounded-full">
 				<div>
 					<form onSubmit={handleSubmit(onSubmit)} className="Form px-4">
@@ -86,7 +73,7 @@ function CreateChangeRequest() {
 							<select
 								id="ChangeType"
 								required
-								{...register("changeType", { required: true })}
+								{...register("changeType", {required: true})}
 								className="bg-slate-200 border border-gray-300 text-gray-900 font-medium rounded-lg p-2"
 								placeholder="Select Change Type">
 								<option disabled value="">
@@ -98,7 +85,21 @@ function CreateChangeRequest() {
 								<option value="UNPLANNED">
 									Unplanned
 								</option>
+								<option value="EMERGENCY">
+									Emergency
+								</option>
 							</select>
+						</div>
+
+						<div className="application flex items-center p-2">
+							<label className="m-2">ApplicationID:</label>
+							<input
+								type="number"
+								autoComplete="off"
+								required
+								{...register("applicationId", {required: true})}
+								className="flex-box m-2 block p-2 text-gray-900 border-2 border-gray-400 rounded-lg bg-gray-50 outline-none sm:text-md"
+							/>
 						</div>
 
 						<div className="title flex items-center p-2">
@@ -107,7 +108,7 @@ function CreateChangeRequest() {
 								type="text"
 								autoComplete="off"
 								required
-								{...register("title", { required: true })}
+								{...register("title", {required: true})}
 								className="flex-box m-2 block p-2 text-gray-900 border-2 border-gray-400 rounded-lg bg-gray-50 outline-none sm:text-md"
 								placeholder="Enter Title"
 							/>
@@ -119,7 +120,7 @@ function CreateChangeRequest() {
 								<input
 									type="datetime-local"
 									required
-									{...register("timeWindowStart", { required: true })}
+									{...register("timeWindowStart", {required: true})}
 									className="flex-box m-2 block p-2 text-gray-900 border-2 border-gray-400 rounded-lg bg-gray-50 outline-none sm:text-md"
 
 								/>
@@ -129,7 +130,7 @@ function CreateChangeRequest() {
 								<input
 									type="datetime-local"
 									required
-									{...register("timeWindowEnd", { required: true })}
+									{...register("timeWindowEnd", {required: true})}
 									className="flex-box m-2 block p-2 text-gray-900 border-2 border-gray-400 rounded-lg bg-gray-50 outline-none sm:text-md"
 								/>
 							</div>
@@ -142,7 +143,7 @@ function CreateChangeRequest() {
 								<textarea
 									className="flex-box resize-none m-2 w-full block p-2 text-gray-900 border-2 border-gray-400 rounded-lg bg-gray-50 outline-none sm:text-md"
 									required
-									{...register("description", { required: true })}
+									{...register("description", {required: true})}
 								/>
 							</div>
 							<div className="reason">
@@ -150,7 +151,7 @@ function CreateChangeRequest() {
 								<textarea
 									className="flex-box resize-none m-2 w-full block p-2 text-gray-900 border-2 border-gray-400 rounded-lg bg-gray-50 outline-none sm:text-md"
 									required
-									{...register("reason", { required: true })}
+									{...register("reason", {required: true})}
 								/>
 							</div>
 							<div>
@@ -158,7 +159,7 @@ function CreateChangeRequest() {
 								<textarea
 									className="flex-box resize-none m-2 w-full block p-2 text-gray-900 border-2 border-gray-400 rounded-lg bg-gray-50 outline-none sm:text-md"
 									required
-									{...register("backoutPlan", { required: true })}
+									{...register("backoutPlan", {required: true})}
 								/>
 							</div>
 							<div className="flex items-center p-2">
@@ -167,9 +168,11 @@ function CreateChangeRequest() {
 									Minutes to execute plan:
 								</label>
 								<input
-									type="time"
+									type="number"
 									autoComplete="off"
 									className="flex-box m-2 block p-2 text-gray-900 border-2 border-gray-400 rounded-lg bg-gray-50 outline-none sm:text-md"
+									required
+									{...register("timeToRevert", {required: true})}
 								/>
 							</div>
 							<div className="risk flex p-2">
@@ -181,6 +184,8 @@ function CreateChangeRequest() {
 											className="peer riskLow"
 											type="radio"
 											name="risk"
+											value="LOW"
+											{...register("riskLevel", {required: true})}
 										/>
 										<label
 											htmlFor="riskLow"
@@ -194,6 +199,8 @@ function CreateChangeRequest() {
 											className="peer riskMed"
 											type="radio"
 											name="risk"
+											value="MEDIUM"
+											{...register("riskLevel", {required: true})}
 										/>
 										<label
 											htmlFor="riskMed"
@@ -207,6 +214,8 @@ function CreateChangeRequest() {
 											className="peer riskHigh"
 											type="radio"
 											name="risk"
+											value="HARD"
+											{...register("riskLevel", {required: true})}
 										/>
 										<label
 											htmlFor="riskHigh"
@@ -217,16 +226,16 @@ function CreateChangeRequest() {
 								</fieldset>
 							</div>
 						</div>
-						<div className="flex items-center">
+						<div className="flex items-center justify-end">
 							<div className="Submit">
 								<button
 									className="hover:border-black border-2 bg-gray-200 font-bold text-black p-2 rounded-lg m-2">
 									Cancel
 								</button>
 								<button
-									type="submit"
+
 									className="hover:border-black border-2 bg-gray-200 font-bold text-black p-2 rounded-lg m-2">
-								    Submit
+									Submit
 								</button>
 							</div>
 						</div>
@@ -236,5 +245,4 @@ function CreateChangeRequest() {
 		</div>
 	)
 }
-
-export default CreateChangeRequest
+export default ABCD
