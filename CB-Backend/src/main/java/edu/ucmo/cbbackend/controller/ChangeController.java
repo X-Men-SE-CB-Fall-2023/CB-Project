@@ -3,6 +3,7 @@ package edu.ucmo.cbbackend.controller;
 import edu.ucmo.cbbackend.dto.request.ChangeRequestBodyDTO;
 import edu.ucmo.cbbackend.dto.response.ChangeRequestHttpResponseDTO;
 import edu.ucmo.cbbackend.model.ChangeRequest;
+import edu.ucmo.cbbackend.model.ChangeRequestState;
 import edu.ucmo.cbbackend.repository.RolesRepository;
 import edu.ucmo.cbbackend.service.ChangeService;
 import edu.ucmo.cbbackend.service.UserService;
@@ -122,12 +123,22 @@ public class ChangeController {
 
     @SecurityRequirement(name = "jwtAuth")
     @GetMapping("/api/v1/change")
-    public ResponseEntity<?> getChange(HttpServletRequest request, @RequestParam(required = false, defaultValue = "0") Integer page, @RequestParam(required = false, defaultValue = "5") Integer size, @RequestParam(required = false, defaultValue = "false") Boolean showAuthorUsername ) {
-        if (userService.userRepository.findByUsername(request.getUserPrincipal().getName()).getRoles().equals(rolesRepository.findByName("USER"))) {
-            Page<ChangeRequestHttpResponseDTO> list = changeService.findAllByUserIdAndSortByDate(page, size, request.getUserPrincipal().getName(), showAuthorUsername);
+    public ResponseEntity<?> getChange(HttpServletRequest request, @RequestParam(required = false, defaultValue = "0") Integer page, @RequestParam(required = false, defaultValue = "5") Integer size, @RequestParam(required = false, defaultValue = "false") Boolean showAuthorUsername, @RequestParam(required = false, defaultValue = "Application") String state) {
+        ChangeRequestState changeRequestState = null;
+        if(state != null){
+            changeRequestState = changeService.toState(state);
+        }
+        if (userService.userRepository.findByUsername(request.getUserPrincipal().getName()).getRoles().equals(rolesRepository.findByNameIgnoreCase("USER"))) {
+            Page<ChangeRequestHttpResponseDTO> list = changeService.findAllByUserIdAndSortByDate(page, size, request.getUserPrincipal().getName(), showAuthorUsername, changeRequestState);
             return ResponseEntity.ok().body(list);
         }
-        Page<ChangeRequestHttpResponseDTO> list = changeService.findAllSortByDate(page, size, showAuthorUsername);
+        if( userService.userRepository.findByUsername(request.getUserPrincipal().getName()).getRoles().equals(rolesRepository.findByNameIgnoreCase("OPERATIONS"))){
+            Page<ChangeRequestHttpResponseDTO> list = changeService.findAllByState(page, size, showAuthorUsername, changeRequestState);
+            return ResponseEntity.ok().body(list);
+        }
+
+
+        Page<ChangeRequestHttpResponseDTO> list = changeService.findAllByRolesAndState(page, size, showAuthorUsername,  userService.userRepository.findByUsername(request.getUserPrincipal().getName()).getRoles(), changeRequestState);
         return ResponseEntity.ok().body(list);
     }
 
